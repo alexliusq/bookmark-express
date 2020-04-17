@@ -1,3 +1,3 @@
 let db = require('./db');
-
-db.query('SELECT * FROM bookmarker').then(msg => console.log(msg))
+console.log('hello');
+db.query('SELECT * FROM test').then(msg => console.log(msg.rows));

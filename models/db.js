@@ -1,19 +1,33 @@
-const db = require('../config/keys').connectionString;
+const connectionString = require('../config/keys').connectionString;
 
 const { Pool } = require('pg');
 
-const isProduction = (config.NODE_ENV === "production");
+// const isProduction = (config.NODE_ENV === "production");
 
-const pool = new Pool({db, ssl: isProduction});
+const pool = new Pool({ connectionString });
+
+const logQuery = (text, params, start) => {
+  let timeStamp = new Date();
+  let formattedtimeStamp = timeStamp.toString().substring(4, 24);
+
+  const duration = Date.now() - start;
+  console.log({
+    formattedtimeStamp,
+    text,
+    params,
+    duration
+  });
+};
+
 
 module.exports = {
-  query: (text, params, callback) => {
-    const start = Date.now()
-    return pool.query(text, params, (err, res) => {
-      const duration = Date.now() - start
-      console.log('executed query', { text, duration, rows: res.rowCount })
-      callback(err, res)
-    })
+  async query(text, ...params) {
+    const start = Date.now();
+
+    let res = await pool.query(text, params);
+    logQuery(text, params, start);
+
+    return res;
   },
   getClient: (callback) => {
     pool.connect((err, client, done) => {
