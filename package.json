@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pg": "^8.0.2"
+    "goodreads-api-node": "0.0.10",
+    "pg": "^8.0.2",
+    "sql-template-strings": "^2.2.2"
   }
 }
