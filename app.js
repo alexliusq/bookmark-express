@@ -3,16 +3,18 @@ const goodReadsKey = require('./config/keys').goodReadsKey;
 const goodreads = require('goodreads-api-node');
 const grClient = goodreads(goodReadsKey);
 
+const bookManager = require('./models/books');
+
 
 // console.log(grClient);
 
-async function getBook(bookID) {
+async function addBook(bookID) {
   let data = await grClient.showBook(bookID);
-  console.log(data);
   let { book } = data;
-  console.log(book);
-
+  return book;
+  // let res = await bookManager.createBookWithGoodreads(book);
+  // console.log(res);
 }
 
-getBook(375802);
-
+addBook(82120)
+  .then(res => console.log(JSON.stringify(res)));

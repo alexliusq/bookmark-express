@@ -2,9 +2,9 @@ CREATE TABLE "books" (
   "id" SERIAL PRIMARY KEY,
   "title" text NOT NULL,
   "completed_bool" bool NOT NULL,
-  "summary" text,
-  "comments" text,
-  "slug" text,
+  -- "summary" text,
+  -- "comments" text,
+  -- "slug" text,
   "goodreads_details_id" int
 );
 
