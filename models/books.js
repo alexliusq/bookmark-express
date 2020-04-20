@@ -28,14 +28,20 @@ async function createBookWithGoodreads(book) {
 
   let res = await db.query(SQL`
     INSERT INTO books
+    (title, completed_bool, goodreads_details_id)
+    VALUES
+    (${title}, false, ${id});
+
+    INSERT INTO goodreads_details
     (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
       publisher, publication_year, publication_month, publication_day, is_ebook,
       description)
     VALUES
     (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
       ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
-      ${is_ebook}, ${description})
+      ${is_ebook}, ${description});
   `);
+  return res;
 }
 
 module.exports = {
