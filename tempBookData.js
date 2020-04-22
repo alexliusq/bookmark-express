@@ -4,7 +4,8 @@ const goodreads = require('goodreads-api-node');
 const grClient = goodreads(goodReadsKey);
 // console.log(grClient);
 
-const fs = require('fs').promises;
+const fsPromise = require('fs').promises;
+const fs = require('fs');
 
 let bookIDs = [82120, 45186565, 38357895];
 
@@ -20,19 +21,19 @@ async function getData(bookIDs) {
 
 async function saveData(data) {
   let json = JSON.stringify(data);
-  await fs.writeFile('temp_book_data.json', json, 'utf8');
+  await fsPromise.writeFile('temp_book_data.json', json, 'utf8');
   console.log('success');
 }
 
-async function readTempData() {
-  let data = await fs.readFile('temp_book_data.json', 'utf8');
+function readTempData() {
+  let data = fs.readFileSync('temp_book_data.json', 'utf8');
   let json = JSON.parse(data);
+  // console.log(json);
   return json;
 }
 
 // getData(bookIDs).then(data => saveData(data));
 
-
 module.exports = {
-  readTempData
-};
+  tempBookData: readTempData()
+}

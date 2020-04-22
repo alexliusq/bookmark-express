@@ -21,11 +21,12 @@ const logQuery = (text, params, start) => {
 
 
 module.exports = {
-  async query(text, ...params) {
+  async query(sql_template_query) {
     const start = Date.now();
 
-    let res = await pool.query(text, params);
-    logQuery(text, params, start);
+    let res = await pool.query(sql_template_query);
+    logQuery(sql_template_query.text, 
+      sql_template_query.values, start);
 
     return res;
   },
