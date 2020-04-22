@@ -67,8 +67,17 @@ async function getBookDetails(goodreadsID) {
     SELECT * FROM goodreads_details WHERE id = ${goodreadsID}
   `);
 
+  debugger;
   console.log(res);
-  return res;
+  return res.rows;
+}
+
+async function getAllBookDetails(limit = 20) {
+  let res = await db.query(SQL`
+    SELECT * FROM goodreads_details LIMIT ${limit}
+  `);
+
+  return res.rows;
 }
 
 // let data = getBookDetails(82120);
@@ -77,5 +86,6 @@ module.exports = {
   initializeBooksDB,
   createBookWithGoodreads,
   dropBooksDB,
-  getBookDetails
+  getBookDetails,
+  getAllBookDetails
 }
