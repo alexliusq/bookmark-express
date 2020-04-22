@@ -6,6 +6,8 @@ const grClient = goodreads(goodReadsKey);
 const express = require('express');
 const app = express();
 
+const books = require('./routes/api/books');
+
 const bookManager = require('./models/books');
 // const { tempBookData } = require('./tempBookData');
 
@@ -16,28 +18,12 @@ const bookManager = require('./models/books');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
+app.use('/api/books', books)
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
-
-async function addBook(bookID) {
-  // let data = await grClient.showBook(bookID);
-  // let { book } = data;
-
-  let res = await bookManager.createBookWithGoodreads(book);
-  console.log(res);
-}
-
-
-// let data;
-// bookManager.getBookDetails(tempBookData[0].id)
-//   .then(res => {
-//     data = res
-//     console.log(res);
-//   });
-
-
