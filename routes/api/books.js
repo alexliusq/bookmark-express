@@ -46,6 +46,7 @@ router.post('/', (req, res) => {
   bookManager.createBookWithGoodreads(book);
 
   res.send(`Success, added book with ${book.id}`);
-})
+});
+
 
 module.exports = router;
