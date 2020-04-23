@@ -1,4 +1,5 @@
 import React from 'react';
+import Books from '../books/books';
 
 class MainPage extends React.Component {
   
@@ -6,6 +7,7 @@ class MainPage extends React.Component {
     return (
       <div>
         <h1>Bookmarker</h1>
+        <Books />
       </div>
     )
   }
