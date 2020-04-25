@@ -43,7 +43,7 @@ async function createBookWithGoodreads(book) {
 
   let res = await db.query(SQL`
   INSERT INTO goodreads_details
-    (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
+    (id, title, isbn13, kindle_asin, marketplace_id, image_url, small_image_url, language_code,
       publisher, publication_year, publication_month, publication_day, is_ebook,
       description)
     VALUES
