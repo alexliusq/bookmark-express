@@ -8,7 +8,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import parse from 'html-react-parser';
+import CollapsibleText from '../collapsibleText';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,31 +23,33 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline',
   },
   large: {
-    width: '100%',
-    height: theme.spacing(7),
-  },
-  img: {
+    width: 100,
     height: 'auto',
-    width: 100
-        // width: 100,
-  }
+    paddingRight: 10
+  },
+  // img: {
+  //   height: 'auto',
+  //   width: 100
+  //       // width: 100,
+  // }
 }));
 
 export default function BookBox(props) {
   const classes = useStyles();
   const book = props.book;
 
+
   return (
     <ListItem alignItems="flex-start">
-      <CardMedia
+      {/* <CardMedia
           className={classes.img}
           component='img'
           image={book.image_url}
-        />
-      {/* <ListItemAvatar>
+        /> */}
+      <ListItemAvatar>
         <Avatar variant="square" className={classes.large}
           src={book.image_url} />
-      </ListItemAvatar> */}
+      </ListItemAvatar>
       <ListItemText
         primary={book.title}
         secondary={
@@ -58,7 +62,7 @@ export default function BookBox(props) {
 {`${book.publication_month}/${book.publication_day}/${book.publication_year}`}
             </Typography>
             <br />
-          {parse(book.description)}
+            <CollapsibleText text={book.description}/>
           </React.Fragment>
         }
       />
