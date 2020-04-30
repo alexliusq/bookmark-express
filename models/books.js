@@ -34,6 +34,24 @@ async function dropBooksDB() {
   console.log(res);
 }
 
+async function createBookWithCalibre(calibreMetaData) {
+  let { 
+    identifiers, author_sort, cover, title, series, publisher,
+    pubdate, title_sort, author_sort_map, comments, authors
+  } = calibreMetaData;
+
+  pubdate = pubdate.split("T")[0];
+  let { isbn, amazon } = identifiers;
+
+  
+}
+
+async function addCalibreAuthor{bookID, author, author_sor}) {
+  let res = await db.query(SQL`
+  INSERT INTO calibreAuthors
+  `);
+}
+
 async function createBookWithGoodreads(book) {
   let {
     id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
@@ -43,7 +61,7 @@ async function createBookWithGoodreads(book) {
 
   let res = await db.query(SQL`
   INSERT INTO goodreads_details
-    (id, title, isbn13, kindle_asin, marketplace_id, image_url, small_image_url, language_code,
+    (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
       publisher, publication_year, publication_month, publication_day, is_ebook,
       description)
     VALUES
@@ -54,9 +72,9 @@ async function createBookWithGoodreads(book) {
 
   let res2 = await db.query(SQL`
     INSERT INTO books
-    (title, completed_bool, goodreads_details_id)
+    (title, completed_bool, goodreads_details_id, isbn)
     VALUES
-    (${title}, false, ${id});
+    (${title}, false, ${id}, ${isbn});
     `);
   
   return {res, res2};

@@ -25,15 +25,30 @@ async function saveData(data) {
   console.log('success');
 }
 
-function readTempData() {
+function readTempBookData() {
   let data = fs.readFileSync('temp_book_data.json', 'utf8');
   let json = JSON.parse(data);
   // console.log(json);
   return json;
 }
 
+function readCalibreMetaData() {
+  let data = fs.readFileSync('../kindle-export/metadata.calibre');
+  let json = JSON.parse(data);
+  return json;
+}
+
+function readAnnotations() {
+  let data = fs.readFileSync('../kindle-export/json_output/clippings_2020-04-30.json');
+  let json = JSON.parse(data);
+  return json;
+}
+
+
 // getData(bookIDs).then(data => saveData(data));
 
 module.exports = {
-  tempBookData: readTempData()
+  tempBookData: readTempBookData(),
+  tempAnnotations: readAnnotations(),
+  tempCalibreMetadata: readCalibreMetaData()
 }
