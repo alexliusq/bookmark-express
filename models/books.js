@@ -83,7 +83,6 @@ async function insertCalibreMetadata(calibreMetaData) {
 
   let {isbn, amazon} = identifiers;
 
-  debugger;
   let res = await db.query(SQL`
   INSERT INTO calibre_metadata
     (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
@@ -105,8 +104,10 @@ async function linkBookToAuthor(isbn, author) {
     FROM (
       SELECT a.id AS author_id, b.id AS book_id
       FROM calibre_authors AS a, calibre_metadata AS b
-      WHERE a.author = ${author} AND b.isbn = ${isbn}) AS c
-  );`);
+      WHERE a.author = ${author} AND b.isbn = ${isbn}
+    ) AS c
+  ) AS b
+    ;`);
 
   return res;
 }
@@ -158,7 +159,6 @@ async function getBookDetails(goodreadsID) {
     SELECT * FROM goodreads_details WHERE id = ${goodreadsID}
   `);
 
-  debugger;
   console.log(res);
   return res.rows;
 }
