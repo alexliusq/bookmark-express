@@ -24,10 +24,14 @@ module.exports = {
   async query(sql_template_query) {
     const start = Date.now();
 
-    let res = await pool.query(sql_template_query);
     logQuery(sql_template_query.text, 
       sql_template_query.values, start);
 
+    let res = await pool.query(sql_template_query);
+ 
+    logQuery(sql_template_query.text, 
+      sql_template_query.values, start);
+      
     return res;
   },
   getClient: (callback) => {

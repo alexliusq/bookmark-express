@@ -8,7 +8,7 @@ CREATE TABLE "books" (
 );
 
 CREATE TABLE "goodreads_details" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "title" text NOT NULL,
   "isbn13" varchar,
   "kindle_asin" varchar,
@@ -24,7 +24,7 @@ CREATE TABLE "goodreads_details" (
 );
 
 CREATE TABLE "kindle_annotations" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "book_id" int,
   "bookline" text,
   "author" text,
@@ -39,19 +39,18 @@ CREATE TABLE "kindle_annotations" (
 );
 
 CREATE TABLE "calibre_authors" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "author" text,
   "author_sort" text
 );
 
 CREATE TABLE "calibre_authors_books" (
-  "id" int PRIMARY KEY,
-  "author_id" int,
-  "book_id" int
+  "author_id" int NOT NULL,
+  "book_id" int NOT NULL
 );
 
 CREATE TABLE "calibre_metadata" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "isbn" text,
   "amazon" text,
   "title" text,
@@ -72,3 +71,5 @@ ALTER TABLE "kindle_annotations" ADD FOREIGN KEY ("book_id") REFERENCES "books" 
 ALTER TABLE "calibre_authors_books" ADD FOREIGN KEY ("author_id") REFERENCES "calibre_authors" ("id");
 
 ALTER TABLE "calibre_authors_books" ADD FOREIGN KEY ("book_id") REFERENCES "calibre_metadata" ("id");
+
+ALTER TABLE "calibre_authors_books" ADD PRIMARY KEY ("author_id", "book_id"); 

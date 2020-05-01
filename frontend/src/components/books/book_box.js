@@ -9,7 +9,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import parse from 'html-react-parser';
 import CollapsibleText from '../collapsibleText';
 
 

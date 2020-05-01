@@ -8,6 +8,7 @@ const theme = createMuiTheme({
     secondary: { main: grey[600] },
     type: 'light',
   },
+  
 });
 
 export default responsiveFontSizes(theme);

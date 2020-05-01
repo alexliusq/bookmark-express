@@ -6,6 +6,7 @@ const grClient = goodreads(goodReadsKey);
 
 const fsPromise = require('fs').promises;
 const fs = require('fs');
+const booksDB = require('./models/books');
 
 let bookIDs = [82120, 45186565, 38357895];
 
@@ -44,11 +45,15 @@ function readAnnotations() {
   return json;
 }
 
-
 // getData(bookIDs).then(data => saveData(data));
+let tempBookData = readTempBookData();
+let tempAnnotations = readAnnotations();
+let tempCalibreMetadata = readCalibreMetaData();
+
+booksDB.createBookWithCalibre(tempCalibreMetadata[3]);
 
 module.exports = {
-  tempBookData: readTempBookData(),
-  tempAnnotations: readAnnotations(),
-  tempCalibreMetadata: readCalibreMetaData()
+  tempBookData,
+  tempAnnotations, 
+  tempCalibreMetadata,
 }

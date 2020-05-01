@@ -8,7 +8,6 @@ const SQL = require('sql-template-strings');
 const path = require('path');
 
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
-const { tempBookData } = require('../tempBookData');
 
 /* sql-template strings example
 // postgres:
@@ -24,32 +23,92 @@ async function initializeBooksDB() {
   console.log(res);
 }
 
-function seedTempData() {
-  tempBookData.forEach(book => createBookWithGoodreads(book));
-}
-
 async function dropBooksDB() {
-  let query = "DROP TABLE books; DROP TABLE goodreads_details";
+  let query = `DROP TABLE books, goodreads_details, kindle_annotations,
+  calibre_authors, calibre_authors_books, calibre_metadata
+  `;
   let res = await db.query(query);
   console.log(res);
 }
 
 async function createBookWithCalibre(calibreMetaData) {
   let { 
-    identifiers, author_sort, cover, title, series, publisher,
-    pubdate, title_sort, author_sort_map, comments, authors
+    identifiers, title, author_sort_map
+  } = calibreMetaData;
+
+  let { isbn } = identifiers;
+
+  // author_sort_map = JSON.parse(author_sort_map);
+  await Promise.all(Object.keys(author_sort_map).map( author => {
+    insertCalibreAuthor(author, author_sort_map[author]);
+  }));
+
+  debugger;
+
+  let res = await insertBook(title, isbn);
+  let res2 = await insertCalibreMetadata(calibreMetaData);
+  let res3 = await Promise.all(
+    Object.keys(author_sort_map).map(author => 
+      linkBookToAuthor(isbn, author)
+    ));
+  return {res, res2, res3};
+}
+
+async function insertBook(title, isbn) {
+  let res = await db.query(SQL`
+  INSERT INTO books (id, title, completed_bool, isbn)
+  VALUES (DEFAULT, ${title}, false, ${isbn})
+  `);
+  return res;
+}
+
+async function insertCalibreAuthor(author, author_sort) {
+  let res = await db.query(SQL`
+  INSERT INTO calibre_authors
+    (author, author_sort)
+  VALUES
+    (${author}, ${author_sort});
+  `);
+
+  return res;
+}
+
+async function insertCalibreMetadata(calibreMetaData) {
+  let { 
+    identifiers, cover, title, series, publisher,
+    pubdate, title_sort, comments
   } = calibreMetaData;
 
   pubdate = pubdate.split("T")[0];
-  let { isbn, amazon } = identifiers;
 
-  
+  let {isbn, amazon} = identifiers;
+
+  debugger;
+  let res = await db.query(SQL`
+  INSERT INTO calibre_metadata
+    (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
+  VALUES
+    (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
+      ${title_sort}, ${comments}, ${cover});
+  `);
 }
 
-async function addCalibreAuthor{bookID, author, author_sor}) {
+async function linkBookToAuthor(isbn, author) {
+
   let res = await db.query(SQL`
-  INSERT INTO calibreAuthors
-  `);
+  UPDATE calibre_authors_books AS a
+  SET 
+    a.author_id = b.author_id, 
+    a.book_id = b.book_id;
+  FROM (
+    SELECT c.author_id, c.book_id
+    FROM (
+      SELECT a.id AS author_id, b.id AS book_id
+      FROM calibre_authors AS a, calibre_metadata AS b
+      WHERE a.author = ${author} AND b.isbn = ${isbn}) AS c
+  );`);
+
+  return res;
 }
 
 async function createBookWithGoodreads(book) {
@@ -70,14 +129,28 @@ async function createBookWithGoodreads(book) {
       ${is_ebook}, ${description});
   `);
 
-  let res2 = await db.query(SQL`
-    INSERT INTO books
-    (title, completed_bool, goodreads_details_id, isbn)
-    VALUES
-    (${title}, false, ${id}, ${isbn});
-    `);
+  let res2 = await insertBook(title, isbn);
+  let res3 = await linkGoodreads(isbn);
   
-  return {res, res2};
+  return {res, res2, res3};
+}
+
+async function linkGoodreads() {
+  let res = await db.query(SQL`
+  UPDATE
+    books
+  SET
+    a.goodreads_details_id = b.id,
+  FROM
+    books AS a
+    INNER JOIN goodreads_details AS b
+      ON a.isbn = b.isbn
+  WHERE
+    a.isbn = ${isbn} AND
+    b.isbn = ${isbn};
+  `);
+
+  return res;
 }
 
 async function getBookDetails(goodreadsID) {
@@ -105,5 +178,6 @@ module.exports = {
   createBookWithGoodreads,
   dropBooksDB,
   getBookDetails,
-  getAllBookDetails
+  getAllBookDetails,
+  createBookWithCalibre,
 }
