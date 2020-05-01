@@ -38,24 +38,25 @@ async function createBookWithCalibre(calibreMetaData) {
 
   let { isbn } = identifiers;
 
-  // author_sort_map = JSON.parse(author_sort_map);
-  await Promise.all(Object.keys(author_sort_map).map( author => {
-    insertCalibreAuthor(author, author_sort_map[author]);
-  }));
-
-  debugger;
-
-  let res = await insertBook(title, isbn);
-  let res2 = await insertCalibreMetadata(calibreMetaData);
-  let res3 = await Promise.all(
-    Object.keys(author_sort_map).map(author => 
-      linkBookToAuthor(isbn, author)
-    ));
-  return {res, res2, res3};
+  try {
+    await Promise.all(Object.keys(author_sort_map).map( author => {
+      return insertCalibreAuthor(author, author_sort_map[author]);
+    }));
+    
+    let res = await insertBook(title, isbn);
+    let res2 = await insertCalibreMetadata(calibreMetaData);
+    let res3 = await Promise.all(
+      Object.keys(author_sort_map).map(author => 
+        linkBookToAuthor(isbn, author)
+      ));
+    return {res, res2, res3};
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 async function insertBook(title, isbn) {
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
   INSERT INTO books (id, title, completed_bool, isbn)
   VALUES (DEFAULT, ${title}, false, ${isbn})
   `);
@@ -63,7 +64,7 @@ async function insertBook(title, isbn) {
 }
 
 async function insertCalibreAuthor(author, author_sort) {
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
   INSERT INTO calibre_authors
     (author, author_sort)
   VALUES
@@ -83,34 +84,36 @@ async function insertCalibreMetadata(calibreMetaData) {
 
   let {isbn, amazon} = identifiers;
 
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
   INSERT INTO calibre_metadata
     (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
   VALUES
     (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
       ${title_sort}, ${comments}, ${cover});
   `);
+
+  return res;
 }
 
 async function linkBookToAuthor(isbn, author) {
 
-  let res = await db.query(SQL`
-  UPDATE calibre_authors_books AS a
-  SET 
-    a.author_id = b.author_id, 
-    a.book_id = b.book_id;
-  FROM (
-    SELECT c.author_id, c.book_id
-    FROM (
-      SELECT a.id AS author_id, b.id AS book_id
-      FROM calibre_authors AS a, calibre_metadata AS b
-      WHERE a.author = ${author} AND b.isbn = ${isbn}
-    ) AS c
-  ) AS b
-    ;`);
+  let res = db.query(SQL`
+  INSERT INTO calibre_authors_books (author_id, book_id)
+  VALUES 
+    ((
+      SELECT id FROM calibre_authors WHERE
+      author = ${author}
+    ),
+    (
+      SELECT id FROM calibre_metadata WHERE
+      isbn = ${isbn}
+    ));
+  `);
 
   return res;
 }
+
+  
 
 async function createBookWithGoodreads(book) {
   let {
@@ -119,25 +122,29 @@ async function createBookWithGoodreads(book) {
     description
   } = book;
 
-  let res = await db.query(SQL`
-  INSERT INTO goodreads_details
-    (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
-      publisher, publication_year, publication_month, publication_day, is_ebook,
-      description)
-    VALUES
-    (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
-      ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
-      ${is_ebook}, ${description});
-  `);
+  try {
+    let res = await db.query(SQL`
+    INSERT INTO goodreads_details
+      (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
+        publisher, publication_year, publication_month, publication_day, is_ebook,
+        description)
+      VALUES
+      (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
+        ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
+        ${is_ebook}, ${description});
+    `);
 
-  let res2 = await insertBook(title, isbn);
-  let res3 = await linkGoodreads(isbn);
-  
-  return {res, res2, res3};
+    let res2 = await insertBook(title, isbn);
+    let res3 = await linkGoodreads(isbn);
+    return {res, res2, res3};
+
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 async function linkGoodreads() {
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
   UPDATE
     books
   SET
@@ -155,7 +162,7 @@ async function linkGoodreads() {
 }
 
 async function getBookDetails(goodreadsID) {
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
     SELECT * FROM goodreads_details WHERE id = ${goodreadsID}
   `);
 
@@ -164,7 +171,7 @@ async function getBookDetails(goodreadsID) {
 }
 
 async function getAllBookDetails(limit = 20) {
-  let res = await db.query(SQL`
+  let res = db.query(SQL`
     SELECT * FROM goodreads_details LIMIT ${limit}
   `);
 

@@ -1,6 +1,6 @@
 CREATE TABLE "books" (
   "id" SERIAL PRIMARY KEY,
-  "title" text NOT NULL,
+  "title" text UNIQUE NOT NULL,
   "completed_bool" bool NOT NULL,
   "isbn" text,
   "goodreads_details_id" int,
@@ -33,14 +33,14 @@ CREATE TABLE "kindle_annotations" (
   "end" int,
   "time" timestamp,
   "text" text,
-  "statusline" text,
+  "statusline" text UNIQUE,
   "ordernr" int,
   "page" text
 );
 
 CREATE TABLE "calibre_authors" (
   "id" SERIAL PRIMARY KEY,
-  "author" text,
+  "author" text UNIQUE,
   "author_sort" text
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE "calibre_authors_books" (
 
 CREATE TABLE "calibre_metadata" (
   "id" SERIAL PRIMARY KEY,
-  "isbn" text,
+  "isbn" text UNIQUE,
   "amazon" text,
   "title" text,
   "title_sort" text,

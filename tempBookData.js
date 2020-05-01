@@ -7,6 +7,7 @@ const grClient = goodreads(goodReadsKey);
 const fsPromise = require('fs').promises;
 const fs = require('fs');
 const booksDB = require('./models/books');
+const validateBookDetails = require('./validation/books');
 
 let bookIDs = [82120, 45186565, 38357895];
 
@@ -36,6 +37,8 @@ function readTempBookData() {
 function readCalibreMetaData() {
   let data = fs.readFileSync('../kindle-export/metadata.calibre');
   let json = JSON.parse(data);
+  json.isbn = json.identifiers.isbn;
+  json.amazon = json.identifiers.amazon;
   return json;
 }
 
@@ -50,7 +53,11 @@ let tempBookData = readTempBookData();
 let tempAnnotations = readAnnotations();
 let tempCalibreMetadata = readCalibreMetaData();
 
-booksDB.createBookWithCalibre(tempCalibreMetadata[3]);
+tempCalibreMetadata.forEach(book => {
+
+})
+
+booksDB.createBookWithCalibre(tempCalibreMetadata[3]).catch(err => console.log(err));
 
 module.exports = {
   tempBookData,

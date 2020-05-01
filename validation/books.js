@@ -8,8 +8,11 @@ module.exports = function validateBookDetails(book) {
   //   errors.text = 'Tweet must be between 5 and 140 characters';
   // }
 
-  if (Validator.isEmpty(book.id)) {
-    errors.id = 'Book must have ID';
+  // if (Validator.isEmpty(book.id)) {
+  //   errors.id = 'Book must have ID';
+  // }
+  if (!Validator.isISBN(book.isbn)) {
+    errors.ISBN = "Book Must have ISBN";
   }
 
   if (Validator.isEmpty(book.title)) {
