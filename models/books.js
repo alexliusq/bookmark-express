@@ -71,11 +71,13 @@ async function addCalibreAnnotation(calibreAnnotation) {
 }
 
 async function getBookID(title) {
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
     SELECT id FROM books WHERE title=${title}
   `);
+  debugger;
+  if(res.rows.length > 0) return res.rows[0].id;
 
-  return res.rows[0].id;
+  return null;
 }
 
 async function createBookWithCalibre(calibreMetaData) {
@@ -227,6 +229,7 @@ async function getAllBookDetails(limit = 20) {
 }
 
 // let data = getBookDetails(82120);
+// getBookDetails('How to ')
 
 module.exports = {
   initializeBooksDB,
@@ -235,5 +238,6 @@ module.exports = {
   getBookDetails,
   getAllBookDetails,
   createBookWithCalibre,
-  addCalibreAnnotation
+  addCalibreAnnotation,
+  getBookID
 }

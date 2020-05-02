@@ -46,7 +46,7 @@ function readCalibreMetaData() {
 }
 
 function readAnnotations() {
-  let data = fs.readFileSync('../kindle-export/json_output/clippings_2020-04-30.json');
+  let data = fs.readFileSync('../kindle-export/json_output/clippings_2020-05-02.json');
   let json = JSON.parse(data);
   return json;
 }
@@ -62,7 +62,7 @@ function addAllMetadata() {
 }
 
 function addAnnotations() {
-  tempAnnotations
+  // tempAnnotations
 }
 
 // getData(bookIDs).then(data => saveData(data));
@@ -81,8 +81,19 @@ function getBookMetadata(title) {
   })
 }
 
-getBookAnnotations('How to Get Filthy Rich')
-  .forEach(anno => booksDB.addCalibreAnnotation(anno));
+// addAllMetadata();
+debugger;
+getBookMetadata('How to Get Filthy Rich')
+  .forEach(book => {
+    book.isbn = book.identifiers.isbn || "";
+    if(validateBookDetails(book).isValid) {
+      booksDB.createBookWithCalibre(book)
+        .catch(err => console.log(err));
+    }
+  })
+
+// getBookAnnotations('How to Get Filthy Rich')
+//   .forEach(anno => booksDB.addCalibreAnnotation(anno));
 
 // console.loggetBookAnnotations('The Worldly Philosophers')
 
