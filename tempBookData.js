@@ -93,10 +93,14 @@ function getBookMetadata(title) {
 //     }
 //   })
 
-getBookAnnotations('How to Get Filthy Rich')
-  .forEach((anno, idx)=> {
-   booksDB.addCalibreAnnotation(anno);
-  });
+
+
+// getBookAnnotations('How to Get Filthy Rich')
+//   .forEach((anno, idx)=> {
+//    booksDB.addCalibreAnnotation(anno);
+//   });
+
+
 
 // console.loggetBookAnnotations('The Worldly Philosophers')
 
