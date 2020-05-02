@@ -95,7 +95,7 @@ function getBookMetadata(title) {
 
 getBookAnnotations('How to Get Filthy Rich')
   .forEach((anno, idx)=> {
-    if (idx == 1) booksDB.addCalibreAnnotation(anno);
+   booksDB.addCalibreAnnotation(anno);
   });
 
 // console.loggetBookAnnotations('The Worldly Philosophers')

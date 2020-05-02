@@ -59,12 +59,12 @@ async function addCalibreAnnotation(calibreAnnotation) {
 
   let res = db.query(SQL`
     INSERT INTO kindle_annotations
-      (book_id, kind, bookline, title, author, language, begin, end,
+      (book_id, kind, bookline, title, author, language, begin, "end",
         time, text, statusline, ordernr, page)
     VALUES
       (${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
         ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${ordernr}, ${page}
-      )
+      );
   `);
 
   return res;
