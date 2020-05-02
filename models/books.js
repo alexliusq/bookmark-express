@@ -64,7 +64,7 @@ async function addCalibreAnnotation(calibreAnnotation) {
     VALUES
       (${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
         ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${ordernr}, ${page}
-      );
+      )
   `);
 
   return res;
@@ -72,12 +72,12 @@ async function addCalibreAnnotation(calibreAnnotation) {
 
 async function getBookID(title) {
   let res = await db.query(SQL`
-    SELECT id FROM books WHERE title=${title}
+    SELECT id FROM books WHERE title = ${title}
   `);
-  debugger;
-  if(res.rows.length > 0) return res.rows[0].id;
 
-  return null;
+  if(!res) return undefined;
+  
+  return res.rows[0].id;
 }
 
 async function createBookWithCalibre(calibreMetaData) {
@@ -118,7 +118,7 @@ async function insertCalibreAuthor(author, author_sort) {
   INSERT INTO calibre_authors
     (author, author_sort)
   VALUES
-    (${author}, ${author_sort});
+    (${author}, ${author_sort})
   `);
 
   return res;
@@ -139,7 +139,7 @@ async function insertCalibreMetadata(calibreMetaData) {
     (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
   VALUES
     (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
-      ${title_sort}, ${comments}, ${cover});
+      ${title_sort}, ${comments}, ${cover})
   `);
 
   return res;
@@ -157,7 +157,7 @@ async function linkBookToAuthor(isbn, author) {
     (
       SELECT id FROM calibre_metadata WHERE
       isbn = ${isbn}
-    ));
+    ))
   `);
 
   return res;
@@ -181,7 +181,7 @@ async function createBookWithGoodreads(book) {
       VALUES
       (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
         ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
-        ${is_ebook}, ${description});
+        ${is_ebook}, ${description})
     `);
 
     let res2 = await insertBook(title, isbn);
@@ -205,7 +205,7 @@ async function linkGoodreads() {
       ON a.isbn = b.isbn
   WHERE
     a.isbn = ${isbn} AND
-    b.isbn = ${isbn};
+    b.isbn = ${isbn}
   `);
 
   return res;
@@ -218,7 +218,7 @@ async function getBookDetails(goodreadsID) {
 
   console.log(res);
   return res.rows;
-}
+} 
 
 async function getAllBookDetails(limit = 20) {
   let res = db.query(SQL`
