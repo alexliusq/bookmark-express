@@ -11,6 +11,11 @@ const validateBookDetails = require('./validation/books');
 
 let bookIDs = [82120, 45186565, 38357895];
 
+const tempBookData = readTempBookData();
+const tempAnnotations = readAnnotations();
+const tempCalibreMetadata = readCalibreMetaData();
+
+
 async function getData(bookIDs) {
   let tempBookData = await Promise.all(
     bookIDs.map(id => {
@@ -37,8 +42,6 @@ function readTempBookData() {
 function readCalibreMetaData() {
   let data = fs.readFileSync('../kindle-export/metadata.calibre');
   let json = JSON.parse(data);
-  json.isbn = json.identifiers.isbn;
-  json.amazon = json.identifiers.amazon;
   return json;
 }
 
@@ -48,19 +51,47 @@ function readAnnotations() {
   return json;
 }
 
+function addAllMetadata() {
+  tempCalibreMetadata.forEach(book => {
+    book.isbn = book.identifiers.isbn || "";
+    if(validateBookDetails(book).isValid) {
+      booksDB.createBookWithCalibre(book)
+        .catch(err => console.log(err));
+    }
+  });
+}
+
+function addAnnotations() {
+  tempAnnotations
+}
+
 // getData(bookIDs).then(data => saveData(data));
-let tempBookData = readTempBookData();
-let tempAnnotations = readAnnotations();
-let tempCalibreMetadata = readCalibreMetaData();
 
-tempCalibreMetadata.forEach(book => {
+function getBookAnnotations(title) {
+  return tempAnnotations.filter(anno => {
+    let re = new RegExp(title, "i");
+    return re.test(anno.bookline);
+  })
+}
 
-})
+function getBookMetadata(title) {
+  return tempCalibreMetadata.filter(book => {
+    let re = new RegExp(title, "i");
+    return re.test(book.title);
+  })
+}
 
-booksDB.createBookWithCalibre(tempCalibreMetadata[3]).catch(err => console.log(err));
+getBookAnnotations('How to Get Filthy Rich')
+  .forEach(anno => booksDB.addCalibreAnnotation(anno));
+
+// console.loggetBookAnnotations('The Worldly Philosophers')
+
+// booksDB.createBookWithCalibre(tempCalibreMetadata[3]).catch(err => console.log(err));
 
 module.exports = {
   tempBookData,
   tempAnnotations, 
   tempCalibreMetadata,
+  getBookAnnotations,
+  getBookMetadata
 }

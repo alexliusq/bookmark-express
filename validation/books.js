@@ -11,8 +11,11 @@ module.exports = function validateBookDetails(book) {
   // if (Validator.isEmpty(book.id)) {
   //   errors.id = 'Book must have ID';
   // }
-  if (!Validator.isISBN(book.isbn)) {
-    errors.ISBN = "Book Must have ISBN";
+  if (Validator.isEmpty(book.isbn)) { 
+   errors.isbn = "Book Must Have ISBN";
+  }
+  if (!Validator.isEmpty(book.isbn) && !Validator.isISBN(book.isbn)) {
+    errors.isbn = "Book Must have valid ISBN";
   }
 
   if (Validator.isEmpty(book.title)) {

@@ -26,7 +26,9 @@ CREATE TABLE "goodreads_details" (
 CREATE TABLE "kindle_annotations" (
   "id" SERIAL PRIMARY KEY,
   "book_id" int,
+  "kind" text,
   "bookline" text,
+  "title" text,
   "author" text,
   "language" varchar(3),
   "begin" int,
