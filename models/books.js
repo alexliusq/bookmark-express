@@ -15,6 +15,35 @@ pg.query('SELECT author FROM books WHERE name = $1 AND author = $2', [book, auth
 pg.query(SQL`SELECT author FROM books WHERE name = ${book} AND author = ${author}`)
 */
 
+/*
+async create(email, password) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const {rows} = await db.query(sql`
+      INSERT INTO users (id, email, password)
+        VALUES (${uuidv4()}, ${email}, ${hashedPassword})
+        RETURNING id, email;
+      `);
+
+      const [user] = rows;
+      return user;
+    } catch (error) {
+      if (error.constraint === 'users_email_key') {
+        return null;
+      }
+
+      throw error;
+    }
+  },
+  async find(email) {
+    const {rows} = await db.query(sql`
+    SELECT * FROM users WHERE email=${email} LIMIT 1;
+    `);
+    return rows[0];
+  }
+*/
+
 async function initializeBooksDB() {
   let queryString = await fs.readFile(tempDataFile, "utf-8");
   // console.log('boo');
@@ -57,27 +86,27 @@ async function addCalibreAnnotation(calibreAnnotation) {
   let book_id = await getBookID(title);
   if (!book_id) console.log('Error could not find book to link annotations to');
 
-  let res = db.query(SQL`
+  const { rows } = await db.query(SQL`
     INSERT INTO kindle_annotations
       (book_id, kind, bookline, title, author, language, begin, "end",
         time, text, statusline, ordernr, page)
     VALUES
       (${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
         ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${ordernr}, ${page}
-      );
+      )  ;
   `);
 
-  return res;
+  return rows[0].id;
 }
 
 async function getBookID(title) {
-  let res = await db.query(SQL`
+  let { rows } = await db.query(SQL`
     SELECT id FROM books WHERE title = ${title}
   `);
 
-  if(!res) return undefined;
+  if(!rows) return null;
   
-  return res.rows[0].id;
+  return rows[0].id;
 }
 
 async function createBookWithCalibre(calibreMetaData) {
@@ -106,7 +135,7 @@ async function createBookWithCalibre(calibreMetaData) {
 }
 
 async function insertBook(title, isbn) {
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
   INSERT INTO books (id, title, completed_bool, isbn)
   VALUES (DEFAULT, ${title}, false, ${isbn})
   `);
@@ -114,15 +143,48 @@ async function insertBook(title, isbn) {
 }
 
 async function insertCalibreAuthor(author, author_sort) {
-  let res = db.query(SQL`
-  INSERT INTO calibre_authors
-    (author, author_sort)
-  VALUES
-    (${author}, ${author_sort})
-  `);
+  try {
+    const { rows } = await db.query(SQL`
+    INSERT INTO calibre_authors
+      (author, author_sort)
+    VALUES
+      (${author}, ${author_sort})
+    RETURNING id;
+    `);
+    return rows[0].id;
+  } catch(err) {
+    if (error.constraint === '_key') {
+      return null;
+    }
 
-  return res;
+    throw error;
+  }
 }
+
+/*
+err: error: duplicate key value violates unique constraint "calibre_authors_author_key" at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48) at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19) at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22) at Socket.emit (events.js:200:13) at addChunk (_stream_readable.js:294:12) at readableAddChunk (_stream_readable.js:275:11) at Socket.Readable.push (_stream_readable.js:210:10) at TCP.onStreamRead (internal/stream_base_commons.js:166:17)
+code: "23505"
+column: undefined
+constraint: "calibre_authors_author_key"
+dataType: undefined
+detail: "Key (author)=(Stephen King) already exists."
+file: "nbtinsert.c"
+hint: undefined
+internalPosition: undefined
+internalQuery: undefined
+length: 237
+line: "570"
+name: "error"
+position: undefined
+routine: "_bt_check_unique"
+schema: "public"
+severity: "ERROR"
+table: "calibre_authors"
+where: undefined
+message: "duplicate key value violates unique constraint "calibre_authors_author_key""
+stack: "error: duplicate key value violates unique constraint "calibre_authors_author_key"↵    at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48)↵    at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19)↵    at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22)↵    at Socket.emit (events.js:200:13)↵    at addChunk (_stream_readable.js:294:12)↵    at readableAddChunk (_stream_readable.js:275:11)↵    at Socket.Readable.push (_stream_readable.js:210:10)↵    at TCP.onStreamRead (internal/stream_base_commons.js:166:17)"
+__proto__: Object
+*/
 
 async function insertCalibreMetadata(calibreMetaData) {
   let { 
@@ -134,7 +196,7 @@ async function insertCalibreMetadata(calibreMetaData) {
 
   let {isbn, amazon} = identifiers;
 
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
   INSERT INTO calibre_metadata
     (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
   VALUES
@@ -147,7 +209,7 @@ async function insertCalibreMetadata(calibreMetaData) {
 
 async function linkBookToAuthor(isbn, author) {
 
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
   INSERT INTO calibre_authors_books (author_id, book_id)
   VALUES 
     ((
@@ -194,7 +256,7 @@ async function createBookWithGoodreads(book) {
 }
 
 async function linkGoodreads() {
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
   UPDATE
     books
   SET
@@ -212,7 +274,7 @@ async function linkGoodreads() {
 }
 
 async function getBookDetails(goodreadsID) {
-  let res = db.query(SQL`
+  let res = await db.query(SQL`
     SELECT * FROM goodreads_details WHERE id = ${goodreadsID}
   `);
 
@@ -220,13 +282,19 @@ async function getBookDetails(goodreadsID) {
   return res.rows;
 } 
 
-async function getAllBookDetails(limit = 20) {
-  let res = db.query(SQL`
-    SELECT * FROM goodreads_details LIMIT ${limit}
+async function getAllBookDetails(limit = 100) {
+  let { rows } = await db.query(SQL`
+    SELECT * FROM books AS a
+    LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
+    LEFT JOIN goodreads_details AS c ON a.isbn = c.isbn13
+    LIMIT ${limit}
   `);
 
-  return res.rows;
+  return res;
 }
+
+debugger;
+insertCalibreAuthor('Stephen King');
 
 // let data = getBookDetails(82120);
 // getBookDetails('How to ')

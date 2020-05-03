@@ -22,7 +22,11 @@ async function addBook(bookID) {
 
 router.get('/', (req, res) => {
   bookManager.getAllBookDetails()
-    .then(books => res.json(books))
+    .then(bookResponse => {
+      // console.log('yello');
+      // console.log(books);
+      res.json(bookResponse.rows);
+    })
     .catch(err =>
       res.status(404).json({ noBooksFound: 'No Books Found'}));
 });
@@ -34,7 +38,7 @@ router.get('/:id', (req, res) => {
       res.status(404).json({ noBookFound: 'No Book With ID Found' }));
 });
 
-router.post('/', (req, res) => {
+router.post('/goodreads', (req, res) => {
   console.log(req.body);
   let book = req.body.book;
 
@@ -48,5 +52,8 @@ router.post('/', (req, res) => {
   res.send(`Success, added book with ${book.id}`);
 });
 
+router.get('/calibre', (req, res) => {
+  
+})
 
 module.exports = router;

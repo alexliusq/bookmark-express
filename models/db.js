@@ -23,10 +23,9 @@ module.exports = {
     const start = Date.now();
     // logQuery(sql_template_query.text, 
     //   sql_template_query.values, start);
-    try {
+    // try {
       console.log(sql_template_query);
 
-      debugger;
       let res = await pool.query(sql_template_query);
       
       logQuery(sql_template_query.text, 
@@ -35,9 +34,9 @@ module.exports = {
 
       console.log("Previous query took: ", duration, "ms");
       return res;
-    } catch(err) {
-      console.error('Error executing query', err);
-    }
+    // } catch(err) {
+    //   console.error('Error executing query', err);
+    // }
   }
   // getClient: (callback) => {
   //   pool.connect((err, client, done) => {
