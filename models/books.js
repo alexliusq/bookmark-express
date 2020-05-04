@@ -118,7 +118,7 @@ async function createBookWithCalibre(calibreMetaData) {
 
 
   try {
-    await Promise.all(Object.keys(author_sort_map).map( author => {
+    const authorIDs = await Promise.all(Object.keys(author_sort_map).map( author => {
       return insertCalibreAuthor(author, author_sort_map[author]);
     }));
     
@@ -153,7 +153,7 @@ async function insertCalibreAuthor(author, author_sort) {
     `);
     return rows[0].id;
   } catch(err) {
-    if (error.constraint === '_key') {
+    if (error.constraint === 'calibre_authors_author_key') {
       return null;
     }
 
@@ -161,7 +161,7 @@ async function insertCalibreAuthor(author, author_sort) {
   }
 }
 
-/*
+/* error object
 err: error: duplicate key value violates unique constraint "calibre_authors_author_key" at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48) at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19) at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22) at Socket.emit (events.js:200:13) at addChunk (_stream_readable.js:294:12) at readableAddChunk (_stream_readable.js:275:11) at Socket.Readable.push (_stream_readable.js:210:10) at TCP.onStreamRead (internal/stream_base_commons.js:166:17)
 code: "23505"
 column: undefined
@@ -294,7 +294,16 @@ async function getAllBookDetails(limit = 100) {
 }
 
 debugger;
-insertCalibreAuthor('Stephen King');
+// async function testInsertAuthor(author_sort_map) {
+//   const authorIDs = await Promise.all(Object.keys(author_sort_map).map( author => {
+//     return insertCalibreAuthor(author, author_sort_map[author]);
+//   }));
+//   console.log(authorIDs);
+//   return authorIDs; 
+// }
+// let ids;
+// testInsertAuthor({'bob':'bob', 'bob1':'bob1'}).then(authors => ids = authors);
+// insertCalibreAuthor('bob');
 
 // let data = getBookDetails(82120);
 // getBookDetails('How to ')

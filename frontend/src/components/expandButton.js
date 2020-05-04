@@ -30,7 +30,6 @@ const styles = (theme) => ({
   },
 });
 
-/The Worldly Philosophers/i.t
 
 /**
  * @ignore - internal component.
