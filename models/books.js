@@ -149,14 +149,12 @@ async function insertCalibreAuthor(author, author_sort) {
       (author, author_sort)
     VALUES
       (${author}, ${author_sort})
+    ON CONFLICT (author)
+    DO UPDATE SET author = EXCLUDED.author
     RETURNING id;
     `);
     return rows[0].id;
   } catch(err) {
-    if (error.constraint === 'calibre_authors_author_key') {
-      return null;
-    }
-
     throw error;
   }
 }
@@ -303,7 +301,7 @@ debugger;
 // }
 // let ids;
 // testInsertAuthor({'bob':'bob', 'bob1':'bob1'}).then(authors => ids = authors);
-// insertCalibreAuthor('bob');
+insertCalibreAuthor('bob');
 
 // let data = getBookDetails(82120);
 // getBookDetails('How to ')
