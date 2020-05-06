@@ -9,13 +9,14 @@ export default class CollapsibleText extends React.Component {
     super(props);
 
     this.state = {
-      expanded: false
+      expanded: false,
+      text: props.text || ""
     }
 
-    this.cleanText = stripHtml(this.props.text);
+    this.cleanText = stripHtml(this.state.text);
     this.collapsedBefore = this.cleanText.substring(0, 200) + ' ...' ;
 
-    this.parsedText = parse(this.props.text);
+    this.parsedText = parse(this.state.text);
     this.handleClickExpand = this.handleClickExpand.bind(this);
   }
 

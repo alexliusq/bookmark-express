@@ -81,21 +81,21 @@ function getBookMetadata(title) {
   })
 }
 
+debugger;
 // addAllMetadata();
 
 
-getBookMetadata('How to Get Filthy Rich')
-  .forEach(book => {
-    book.isbn = book.identifiers.isbn || "";
-    if(validateBookDetails(book).isValid) {
-      debugger;
-      booksDB.createBookWithCalibre(book)
-        .catch(err => console.log(err));
-    }
-  })
+// getBookMetadata('How to Get Filthy Rich')
+//   .forEach(book => {
+//     book.isbn = book.identifiers.isbn || "";
+//     if(validateBookDetails(book).isValid) {
+//       debugger;
+//       booksDB.createBookWithCalibre(book)
+//         .catch(err => console.log(err));
+//     }
+//   })
 
-
-
+booksDB.getAllBookDetails().then(res => console.log(res));
 // getBookAnnotations('How to Get Filthy Rich')
 //   .forEach((anno, idx)=> {
 //    booksDB.addCalibreAnnotation(anno);

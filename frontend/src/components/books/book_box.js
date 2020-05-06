@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
 export default function BookBox(props) {
   const classes = useStyles();
   const book = props.book;
-
+  console.log(book);
+  // console.log(book.pubdate);
 
   return (
     <ListItem alignItems="flex-start">
@@ -58,7 +59,7 @@ export default function BookBox(props) {
               variant="body2"
               className={classes.inline}
               color="textPrimary">
-{`${book.publication_month}/${book.publication_day}/${book.publication_year}`}
+{`${book.pubdate.getMonth()}/${book.pubdate.getDate()}/${book.pubdate.getFullYear()}`}}
             </Typography>
             <br />
             <CollapsibleText text={book.description}/>
