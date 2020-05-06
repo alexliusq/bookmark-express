@@ -84,14 +84,15 @@ function getBookMetadata(title) {
 // addAllMetadata();
 
 
-// getBookMetadata('How to Get Filthy Rich')
-//   .forEach(book => {
-//     book.isbn = book.identifiers.isbn || "";
-//     if(validateBookDetails(book).isValid) {
-//       booksDB.createBookWithCalibre(book)
-//         .catch(err => console.log(err));
-//     }
-//   })
+getBookMetadata('How to Get Filthy Rich')
+  .forEach(book => {
+    book.isbn = book.identifiers.isbn || "";
+    if(validateBookDetails(book).isValid) {
+      debugger;
+      booksDB.createBookWithCalibre(book)
+        .catch(err => console.log(err));
+    }
+  })
 
 
 

@@ -110,11 +110,11 @@ async function getBookID(title) {
 }
 
 async function createBookWithCalibre(calibreMetaData) {
-  let { 
+  const { 
     identifiers, title, author_sort_map
   } = calibreMetaData;
 
-  let { isbn } = identifiers;
+  const { isbn } = identifiers;
 
 
   try {
@@ -122,24 +122,33 @@ async function createBookWithCalibre(calibreMetaData) {
       return insertCalibreAuthor(author, author_sort_map[author]);
     }));
     
-    let res = await insertBook(title, isbn);
-    let res2 = await insertCalibreMetadata(calibreMetaData);
-    let res3 = await Promise.all(
-      Object.keys(author_sort_map).map(author => 
-        linkBookToAuthor(isbn, author)
-      ));
-    return {res, res2, res3};
+    const bookID = await insertBook(title, isbn);
+    const calibreID = await insertCalibreMetadata(calibreMetaData);
+    const res = await Promise.all(
+      authorIDs.map(authorID => insertAuthorIDBookID(authorID, calibreID))
+    );
+    return calibreID;
   } catch(err) {
     console.log(err);
+    throw(err);
   }
 }
 
 async function insertBook(title, isbn) {
-  let res = await db.query(SQL`
-  INSERT INTO books (id, title, completed_bool, isbn)
-  VALUES (DEFAULT, ${title}, false, ${isbn})
-  `);
-  return res;
+  try {
+    const {rows} = await db.query(SQL`
+    INSERT INTO books
+      (title, completed_bool, isbn)
+    VALUES
+      (${title}, false, ${isbn})
+    ON CONFLICT (title)
+    DO UPDATE SET title = EXCLUDED.title
+    RETURNING id;
+    `);
+    return rows[0].id;
+  } catch(err) {
+    throw (err)
+  }
 }
 
 async function insertCalibreAuthor(author, author_sort) {
@@ -155,7 +164,7 @@ async function insertCalibreAuthor(author, author_sort) {
     `);
     return rows[0].id;
   } catch(err) {
-    throw error;
+    throw err;
   }
 }
 
@@ -192,17 +201,40 @@ async function insertCalibreMetadata(calibreMetaData) {
 
   pubdate = pubdate.split("T")[0];
 
-  let {isbn, amazon} = identifiers;
+  const {isbn, amazon} = identifiers;
 
-  let res = await db.query(SQL`
-  INSERT INTO calibre_metadata
-    (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
-  VALUES
-    (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
-      ${title_sort}, ${comments}, ${cover})
-  `);
+  try {
+    const {rows} = await db.query(SQL`
+    INSERT INTO calibre_metadata
+      (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
+    VALUES
+      (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
+        ${title_sort}, ${comments}, ${cover})
+    ON CONFLICT (isbn)
+    DO UPDATE SET isbn = EXCLUDED.isbn
+    RETURNING id;
+    `);
+  
+    return rows[0].id;
+  } catch (err) {
+    throw(err);
+  }
+}
 
-  return res;
+
+async function insertAuthorIDBookID(authorID, bookID) {
+  try {
+    const {rows} = await db.query(SQL`
+    INSERT INTO calibre_authors_books (author_id, book_id)
+    VALUES (${authorID}, ${bookID})
+    ON CONFLICT (author_id, book_id)
+    DO UPDATE SET book_id = EXCLUDED.book_id
+    RETURNING author_id, book_id;
+    `);
+    return rows[0].id 
+  } catch(err) {
+    throw(err);
+  }
 }
 
 async function linkBookToAuthor(isbn, author) {
@@ -291,7 +323,8 @@ async function getAllBookDetails(limit = 100) {
   return res;
 }
 
-debugger;
+// debugger;
+
 // async function testInsertAuthor(author_sort_map) {
 //   const authorIDs = await Promise.all(Object.keys(author_sort_map).map( author => {
 //     return insertCalibreAuthor(author, author_sort_map[author]);
@@ -301,7 +334,8 @@ debugger;
 // }
 // let ids;
 // testInsertAuthor({'bob':'bob', 'bob1':'bob1'}).then(authors => ids = authors);
-insertCalibreAuthor('bob');
+
+// insertCalibreAuthor('bob');
 
 // let data = getBookDetails(82120);
 // getBookDetails('How to ')
