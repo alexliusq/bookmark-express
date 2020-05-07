@@ -7,6 +7,7 @@ const grClient = goodreads(goodReadsKey);
 const fsPromise = require('fs').promises;
 const fs = require('fs');
 const booksDB = require('./models/books');
+const Annotations = require('./models/annotations');
 const validateBookDetails = require('./validation/books');
 
 let bookIDs = [82120, 45186565, 38357895];
@@ -61,8 +62,16 @@ function addAllMetadata() {
   });
 }
 
-function addAnnotations() {
-  // tempAnnotations
+function addAllAnnotations() {
+  tempAnnotations.forEach(anno => {
+    Annotations.addCalibreAnnotation(anno);
+  });
+}
+
+function addAnnotation(ordernr) {
+  Annotations.addCalibreAnnotation(
+    tempAnnotations[ordernr]
+  );
 }
 
 // getData(bookIDs).then(data => saveData(data));
@@ -82,8 +91,18 @@ function getBookMetadata(title) {
 }
 
 debugger;
-// addAllMetadata();
+// tempAnnotations.forEach(anno => {
+//   Annotations.getBookID(anno.title)
+//     .then(id => console.log(id));
+// })
 
+// Annotations.getBookID('Hackers Painters')
+//   .then(id => console.log(id));
+// addAnnotation(1000);
+
+// addAllAnnotations();
+
+// addAllMetadata();
 
 // getBookMetadata('How to Get Filthy Rich')
 //   .forEach(book => {
@@ -95,7 +114,7 @@ debugger;
 //     }
 //   })
 
-booksDB.getAllBookDetails().then(res => console.log(res));
+// booksDB.getAllBookDetails().then(res => console.log(res));
 // getBookAnnotations('How to Get Filthy Rich')
 //   .forEach((anno, idx)=> {
 //    booksDB.addCalibreAnnotation(anno);

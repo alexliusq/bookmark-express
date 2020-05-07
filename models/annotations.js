@@ -62,11 +62,11 @@ async function addCalibreAnnotation(calibreAnnotation) {
 
   const { rows } = await db.query(SQL`
     INSERT INTO kindle_annotations
-      (book_id, kind, bookline, title, author, language, begin, "end",
-        time, text, statusline, ordernr, page)
+      (id, book_id, kind, bookline, title, author, language, begin, "end",
+        time, text, statusline, page)
     VALUES
-      (${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
-        ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${ordernr}, ${page}
+      (${ordernr}, ${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
+        ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${page}
       )
     ON CONFLICT (statusline)
     DO UPDATE set statusline = EXCLUDED.statusline
@@ -81,11 +81,12 @@ async function getBookID(title) {
     SELECT id FROM books WHERE title = ${title}
   `);
 
-  if(!rows) return null;
+  if(!rows[0]) return null;
   
   return rows[0].id;
 }
 
 module.exports = {
-  addCalibreAnnotation
+  addCalibreAnnotation,
+  getBookID
 }
