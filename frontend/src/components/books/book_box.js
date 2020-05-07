@@ -62,7 +62,7 @@ export default function BookBox(props) {
 {`${book.pubdate.getMonth()}/${book.pubdate.getDate()}/${book.pubdate.getFullYear()}`}}
             </Typography>
             <br />
-            <CollapsibleText text={book.description}/>
+            <CollapsibleText text={book.comments}/>
           </React.Fragment>
         }
       />
