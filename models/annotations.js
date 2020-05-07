@@ -8,7 +8,7 @@ const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
 const annotationsQueryTemplate = () => (SQL`
 SELECT book_id, kind, bookline, title, author, language, begin,
-"end", TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss'), text, page
+"end", TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, text, page
 FROM kindle_annotations `);
 
 async function getAllAnnotations(limit = 50) {
