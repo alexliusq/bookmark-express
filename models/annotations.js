@@ -1,5 +1,6 @@
 let db = require('./db');
 const fs = require('fs').promises;
+const Books = require('./books');
 
 const SQL = require('sql-template-strings');
 const path = require('path');
@@ -12,7 +13,7 @@ FROM kindle_annotations `);
 
 async function getAllAnnotations(limit = 50) {
   const query = annotationsQueryTemplate()
-    .append(SQL` LIMIT ${limit}`);
+    .append(SQL`LIMIT ${limit}`);
 
   const {rows} = await db.query(query);
   return rows;
@@ -26,7 +27,7 @@ async function getAnnotationsByBookTitle(title) {
 
 async function getAnnotationsByBookID(book_id) {
   const query = annotationsQueryTemplate()
-    .append(SQL` WHERE book_id = ${book_id}`);
+    .append(SQL`WHERE book_id = ${book_id}`);
 
   const {rows} = await db.query(query);
   return rows;
@@ -34,7 +35,7 @@ async function getAnnotationsByBookID(book_id) {
 
 async function getAnnotationByID(annoID) {
   const query = annotationsQueryTemplate()
-    .append(SQL`WHERE id = ${annoID}`);
+    .append(SQL` WHERE id = ${annoID}`);
   
   const {rows} = await db.query(query);
   return rows;
@@ -66,7 +67,10 @@ async function addCalibreAnnotation(calibreAnnotation) {
   } = calibreAnnotation;
 
   let book_id = await getBookID(title);
-  if (!book_id) console.log('Error could not find book to link annotations to');
+  if (!book_id) {
+    console.log('Could not find pre-existing book to link annotations to');
+    book_id = await Books.insertBook(title);
+  }
 
   const { rows } = await db.query(SQL`
     INSERT INTO kindle_annotations
