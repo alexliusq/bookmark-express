@@ -7,6 +7,7 @@ const express = require('express');
 const app = express();
 
 const books = require('./routes/api/books');
+const annotations = require('./routes/api/annotations');
 
 const bookManager = require('./models/books');
 // const { tempBookData } = require('./tempBookData');
@@ -18,7 +19,8 @@ const bookManager = require('./models/books');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
-app.use('/api/books', books)
+app.use('/api/books', books);
+app.use('/api/annotations', annotations)
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

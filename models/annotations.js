@@ -5,10 +5,18 @@ const SQL = require('sql-template-strings');
 const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
-const annotationsQueryTemplate = SQL`
+const annotationsQueryTemplate = () => (SQL`
 SELECT book_id, kind, bookline, title, author, language, begin,
-"end", TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss'), text, ordernr, page)
-FROM kindle_annotations`;
+"end", TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss'), text, page
+FROM kindle_annotations `);
+
+async function getAllAnnotations(limit = 50) {
+  const query = annotationsQueryTemplate()
+    .append(SQL` LIMIT ${limit}`);
+
+  const {rows} = await db.query(query);
+  return rows;
+}
 
 async function getAnnotationsByBookTitle(title) {
   const book_id = await getBookID(title);
@@ -17,15 +25,15 @@ async function getAnnotationsByBookTitle(title) {
 }
 
 async function getAnnotationsByBookID(book_id) {
-  const query = annotationsQueryTemplate
-    .append(SQL`WHERE book_id = ${book_id}`);
+  const query = annotationsQueryTemplate()
+    .append(SQL` WHERE book_id = ${book_id}`);
 
   const {rows} = await db.query(query);
   return rows;
 }
 
-async function getAnnotationsByID(annoID) {
-  const query = annotationsQueryTemplate
+async function getAnnotationByID(annoID) {
+  const query = annotationsQueryTemplate()
     .append(SQL`WHERE id = ${annoID}`);
   
   const {rows} = await db.query(query);
@@ -88,5 +96,8 @@ async function getBookID(title) {
 
 module.exports = {
   addCalibreAnnotation,
-  getBookID
+  getBookID,
+  getAllAnnotations,
+  getAnnotationByID,
+  getAnnotationsByBookID
 }

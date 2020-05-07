@@ -26,11 +26,10 @@ router.get('/bookID/:id', (req, res) => {
   Annotations.getAnnotationsByBookID(req.params.id)
     .then(annos => res.json(annos))
     .catch(err => {
-      res.status(404).json({ noAnnotationsFound: "No Annotations Associated with Book ID found"})
+      res.status(404).json({ noAnnotationsFound: "No Annotations Associated with Book ID found"});
     })
 })
 
 
-rout
 
 module.exports = router;
