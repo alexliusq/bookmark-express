@@ -36,7 +36,6 @@ CREATE TABLE "kindle_annotations" (
   "time" timestamp,
   "text" text,
   "statusline" text UNIQUE,
-  "ordernr" int,
   "page" text
 );
 

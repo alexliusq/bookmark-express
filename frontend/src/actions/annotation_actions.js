@@ -3,8 +3,6 @@ import {
   getAnnotationByID,
   getAnnotationByBookID
 } from '../util/annotation_api_util';
-import { fetchAllBooks } from './book_actions';
-import { getBookDetails } from '../util/book_api_util';
 
 export const RECEIVE_ANNOTATION = "RECEIVE_ANNOTATION";
 export const RECEIVE_ALL_ANNOTATIONS = "RECEIVE_ALL_ANNOTATIONS";
