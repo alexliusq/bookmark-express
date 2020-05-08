@@ -6,6 +6,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles({
   root: {
@@ -31,6 +32,17 @@ export default function AnnotationCard(props) {
   const bull = <span className={classes.bullet}>•</span>;
   console.log(annotation.time);
 
+  let note;
+  if (annotation.note) {
+    note =
+      <React.Fragment>
+        <Divider />
+        <Typography variant="body2" component="p">
+          {annotation.note}
+        </Typography>
+      </React.Fragment>;
+  }
+
   return (
     <Card className={classes.root} variant="outlined">
       <CardContent>
@@ -46,6 +58,7 @@ export default function AnnotationCard(props) {
         <Typography variant="body2" component="blockquote">
          {annotation.text}
         </Typography>
+        {note}
       </CardContent>
       <CardActions>
         <Button size="small">Learn More</Button>

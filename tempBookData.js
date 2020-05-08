@@ -91,6 +91,10 @@ function getBookMetadata(title) {
 }
 
 debugger;
+
+Annotations.getAnnotationByID(9092)
+  .then(anno => console.log(anno));
+
 // addAllAnnotations();
 // let annos = tempAnnotations.filter(anno => {
 //   return anno.title === 'Sapiens' && anno.end > 2030 && anno.end < 2040;
@@ -98,7 +102,7 @@ debugger;
 
 // console.log(annos);
 
-// tempAnnotations.filter(anno => anno.end === 1317)
+// tempAnnotations.filter(anno => anno.ordernr === 9092)
 //   .forEach(anno => console.log(anno));
 
 // tempAnnotations.forEach(anno => {
@@ -109,11 +113,6 @@ debugger;
 // Annotations.getBookID('Hackers Painters')
 //   .then(id => console.log(id));
 // addAnnotation(1000);
-
-addAnnotation(162).then(() => {
-  addAnnotation(163)
-}
-);
 
 // addAllMetadata();
 

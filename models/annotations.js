@@ -36,10 +36,13 @@ async function getAnnotationsByBookID(book_id) {
 async function getAnnotationByID(annoID) {
   const query = annotationsQueryTemplate()
     .append(SQL` WHERE id = ${annoID}`);
-  
+
   const {rows} = await db.query(query);
-  return rows;
+  
+  if (!rows[0]) return null;
+  return rows[0];
 }
+  
 
 /*
 kind: 'highlight',
