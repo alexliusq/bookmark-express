@@ -7,8 +7,8 @@ const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
 const annotationsQueryTemplate = () => (SQL`
-SELECT book_id, kind, bookline, title, author, language, begin,
-"end", TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, text, page
+SELECT book_id, bookline, title, author, language, begin, "end",
+TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
 FROM kindle_annotations `);
 
 async function getAllAnnotations(limit = 50) {
@@ -59,48 +59,94 @@ kind: 'highlight',
   }
 */
 
+async function getMatchingAnnotation(book_id, end) {
+  const {rows} = await db.query(SQL`
+  SELECT id FROM kindle_annotations WHERE book_id = ${book_id} AND "end" = ${end}
+  `);
+  if (!rows[0]) return null;
+  return rows[0].id;
+}
 
 async function addCalibreAnnotation(calibreAnnotation) {
-  let {
-    kind, bookline, title, author, language, begin, end,
-    time, text, statusline, ordernr, page
+  const {
+    ordernr, kind, bookline, title, author, language, begin, end,
+    time, text, statusline, page
   } = calibreAnnotation;
 
-  let book_id = await getBookID(title);
+  let book_id = await Books.getBookID(title);
   if (!book_id) {
     console.log('Could not find pre-existing book to link annotations to');
     book_id = await Books.insertBook(title);
   }
 
-  const { rows } = await db.query(SQL`
-    INSERT INTO kindle_annotations
-      (id, book_id, kind, bookline, title, author, language, begin, "end",
-        time, text, statusline, page)
-    VALUES
-      (${ordernr}, ${book_id}, ${kind}, ${bookline}, ${title}, ${author}, ${language},
-        ${begin}, ${end}, ${time}, ${text}, ${statusline}, ${page}
-      )
-    ON CONFLICT (statusline)
-    DO UPDATE set statusline = EXCLUDED.statusline
-    RETURNING id;
-  `);
+  let id = await getMatchingAnnotation(book_id, end);
+  id = id || ordernr;
 
+  const highlight = kind === 'highlight' ? text : null;
+  const note = kind === 'note' ? text : null;
+
+  const query = SQL`
+  INSERT INTO kindle_annotations
+    (id, book_id, bookline, title, author, language, begin, "end",
+      time, highlight, note, statusline, page)
+  VALUES
+    (${id}, ${book_id}, ${bookline}, ${title}, ${author}, ${language},
+      ${begin}, ${end}, ${time}, ${highlight}, ${note}, ${statusline}, ${page}
+    )
+  ON CONFLICT (id)
+  DO UPDATE SET
+  statusline = EXCLUDED.statusline, time = EXCLUDED.time`
+
+  if (highlight) query.append(SQL`, highlight = ${highlight}`);
+  if (note) query.append(SQL`, note = ${note}`);
+
+  query.append(' RETURNING id');
+
+  const {rows} = await db.query(query);
+
+  return rows[0].id;
+
+  // let annotationID;
+  // if (highlight) {
+  //   annotationID = await insertHighlight({
+  //     ...calibreAnnotation,
+  //     highlight,
+  //     book_id
+  //   })
+  // } else if (note) {
+  //   annotationID = await insertNote({
+  //     ...calibreAnnotation,
+  //     note,
+  //     book_id
+  //   })
+  // }
+
+  // return annotationID;
+}
+
+async function insertHighlight(annotation) {
+  
   return rows[0].id;
 }
 
-async function getBookID(title) {
-  const { rows } = await db.query(SQL`
-    SELECT id FROM books WHERE title = ${title}
-  `);
+async function insertNote(annotation) {
+  const {note, statusline, time, book_id, end} = annotation;
 
-  if(!rows[0]) return null;
-  
+  const {rows} = await db.query(SQL`
+    UPDATE kindle_annotations
+    SET
+      note = ${note},
+      statusline = ${statusline},
+      time = ${time}
+    WHERE
+      book_id = ${book_id} AND "end" = ${end}
+    RETURNING id;
+  `);
   return rows[0].id;
 }
 
 module.exports = {
   addCalibreAnnotation,
-  getBookID,
   getAllAnnotations,
   getAnnotationByID,
   getAnnotationsByBookID

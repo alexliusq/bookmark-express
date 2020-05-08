@@ -26,7 +26,6 @@ CREATE TABLE "goodreads_details" (
 CREATE TABLE "kindle_annotations" (
   "id" SERIAL PRIMARY KEY,
   "book_id" int,
-  "kind" text,
   "bookline" text,
   "title" text,
   "author" text,
@@ -34,8 +33,9 @@ CREATE TABLE "kindle_annotations" (
   "begin" int,
   "end" int,
   "time" timestamp,
-  "text" text,
-  "statusline" text UNIQUE,
+  "highlight" text,
+  "note" text,
+  "statusline" text,
   "page" text
 );
 

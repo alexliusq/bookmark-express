@@ -1,3 +1,4 @@
+import dateFormat from 'dateformat';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -15,9 +16,9 @@ const useStyles = makeStyles({
     margin: '0 2px',
     transform: 'scale(0.8)',
   },
-  title: {
-    fontSize: 14,
-  },
+  // title: {
+  //   fontSize: 14,
+  // },
   pos: {
     marginBottom: 12,
   },
@@ -28,24 +29,22 @@ export default function AnnotationCard(props) {
   const annotation = props.annotation;
 
   const bull = <span className={classes.bullet}>•</span>;
-  console.log(classes.root);
+  console.log(annotation.time);
 
   return (
     <Card className={classes.root} variant="outlined">
       <CardContent>
-        <Typography className={classes.title} color="textSecondary" gutterBottom>
+        {/* <Typography className={classes.title} color="textSecondary" gutterBottom>
           Word of the Day
-        </Typography>
-        <Typography variant="h5" component="h2">
+        </Typography> */}
+        {/* <Typography variant="h5" component="h2">
           be{bull}nev{bull}o{bull}lent
-        </Typography>
+        </Typography> */}
         <Typography className={classes.pos} color="textSecondary">
-          adjective
+          {dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")}
         </Typography>
-        <Typography variant="body2" component="p">
-          well meaning and kindly.
-          <br />
-          {'"a benevolent smile"'}
+        <Typography variant="body2" component="blockquote">
+         {annotation.text}
         </Typography>
       </CardContent>
       <CardActions>

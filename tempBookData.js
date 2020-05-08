@@ -62,13 +62,13 @@ function addAllMetadata() {
   });
 }
 
-function addAllAnnotations() {
-  tempAnnotations.forEach(anno => {
-    Annotations.addCalibreAnnotation(anno);
-  });
+async function addAllAnnotations() {
+  for (anno of tempAnnotations) {
+    await Annotations.addCalibreAnnotation(anno);
+  }
 }
 
-function addAnnotation(ordernr) {
+async function addAnnotation(ordernr) {
   Annotations.addCalibreAnnotation(
     tempAnnotations[ordernr]
   );
@@ -91,6 +91,16 @@ function getBookMetadata(title) {
 }
 
 debugger;
+// addAllAnnotations();
+// let annos = tempAnnotations.filter(anno => {
+//   return anno.title === 'Sapiens' && anno.end > 2030 && anno.end < 2040;
+// })
+
+// console.log(annos);
+
+// tempAnnotations.filter(anno => anno.end === 1317)
+//   .forEach(anno => console.log(anno));
+
 // tempAnnotations.forEach(anno => {
 //   Annotations.getBookID(anno.title)
 //     .then(id => console.log(id));
@@ -100,7 +110,10 @@ debugger;
 //   .then(id => console.log(id));
 // addAnnotation(1000);
 
-// addAllAnnotations();
+addAnnotation(162).then(() => {
+  addAnnotation(163)
+}
+);
 
 // addAllMetadata();
 
@@ -119,7 +132,6 @@ debugger;
 //   .forEach((anno, idx)=> {
 //    booksDB.addCalibreAnnotation(anno);
 //   });
-
 
 
 // console.loggetBookAnnotations('The Worldly Philosophers')
