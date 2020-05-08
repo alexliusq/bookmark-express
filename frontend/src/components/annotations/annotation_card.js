@@ -28,6 +28,7 @@ export default function AnnotationCard(props) {
   const annotation = props.annotation;
 
   const bull = <span className={classes.bullet}>•</span>;
+  console.log(classes.root);
 
   return (
     <Card className={classes.root} variant="outlined">

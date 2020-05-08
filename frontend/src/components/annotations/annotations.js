@@ -31,6 +31,7 @@ class Annotations extends React.Component {
 
   render() {
     return (
+      <AnnotationCard anno={annotation}/>
     )
   }
 }
