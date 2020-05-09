@@ -13,7 +13,7 @@ const tempAnnotation = {
   language: 'en',
   begin: 1308,
   end: 1317,
-  time: '2020-02-22-12-30-11',
+  time: new Date(...'2020-02-22-12-30-11'.split('-')),
   highlight: 'The objection most relevant to market reasoning asks why we should ' +
     'maximize the satisfaction of preferences regardless of their moral ' +
     'worth. If some people like opera and others like dogfights or mud ' +
@@ -55,9 +55,9 @@ class Annotations extends React.Component {
     super(props);
   }
 
-  componentDidMount() {
+  componentDidMount() { 
     const {bookID} = this.props.match.params;
-    this.props.fetchBookAnnotations(bookID);
+    // this.props.fetchBookAnnotations(bookID);
   }
 
   render() {

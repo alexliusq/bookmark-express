@@ -7,6 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import EditIcon from '@material-ui/icons/Edit';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
 
 const useStyles = makeStyles({
   root: {
@@ -14,7 +17,7 @@ const useStyles = makeStyles({
   },
   bullet: {
     display: 'inline-block',
-    margin: '0 2px',
+    margin: '0 8px',
     transform: 'scale(0.8)',
   },
   // title: {
@@ -23,7 +26,25 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
+  cardActions: {
+    "justify-content": 'flex-end'
+  },
+  quote: {
+    "font-family": "'Noto Serif', serif",
+    "line-height": 1.3
+  },
+  noteTitle: {
+    marginTop: '0.5rem',
+    color: 'rgba(0, 0, 0, 0.5)'
+  }
 });
+
+function getFormattedLocation(annotation) {
+  const {begin, end, page} = annotation;
+  if (page) return `Pg. ${page}`;
+  if (begin && end) return `Location ${begin}-${end}`;
+  return null;
+}
 
 export default function AnnotationCard(props) {
   const classes = useStyles();
@@ -36,7 +57,10 @@ export default function AnnotationCard(props) {
   if (annotation.note) {
     note =
       <React.Fragment>
-        <Divider />
+        <Divider variant="middle" light={true} />
+        <Typography variant="subtitle1" className={classes.noteTitle} >
+          Note
+        </Typography>
         <Typography variant="body2" component="p">
           {annotation.note}
         </Typography>
@@ -46,23 +70,64 @@ export default function AnnotationCard(props) {
   return (
     <Card className={classes.root} variant="outlined">
       <CardContent>
-        {/* <Typography className={classes.title} color="textSecondary" gutterBottom>
-          Word of the Day
-        </Typography> */}
-        {/* <Typography variant="h5" component="h2">
-          be{bull}nev{bull}o{bull}lent
-        </Typography> */}
         <Typography className={classes.pos} color="textSecondary">
-          {dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")}
+  {getFormattedLocation(annotation)}{bull}{dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")} 
         </Typography>
-        <Typography variant="body2" component="blockquote">
-         {annotation.text}
+        <Typography className={classes.quote} gutterBottom={true}>
+         {annotation.highlight}
         </Typography>
+        <CardActions className={classes.cardActions}>
+          <Button size="small" variant="outlined" endIcon={<EditIcon />}>
+            Edit
+          </Button>
+          <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
+            Favorite
+          </Button>
+          <Button size="small" variant="outlined" endIcon={<LocalOfferRoundedIcon />}>
+            Tag
+          </Button>
+        </CardActions>
         {note}
       </CardContent>
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
     </Card>
   );
 }
+
+/*
+<CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        <IconButton aria-label="share">
+          <ShareIcon />
+        </IconButton>
+        <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded,
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
+*/
+
+/*
+<Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        endIcon={<Icon>send</Icon>}
+      >
+        Send
+      </Button>
+      <Button
+        variant="contained"
+        color="default"
+        className={classes.button}
+        startIcon={<CloudUploadIcon />}
+      >
+        Upload
+      </Button>
+*/
