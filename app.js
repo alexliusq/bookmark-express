@@ -19,8 +19,8 @@ const bookManager = require('./models/books');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
-app.use('/books', books);
-app.use('/annotations', annotations);
+app.use('/api/books', books);
+app.use('/api/annotations', annotations);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

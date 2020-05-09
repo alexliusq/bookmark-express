@@ -9,5 +9,5 @@ export const getAnnotationByID = id => {
 }
 
 export const getAnnotationByBookID = bookID => {
-  return axios.get(`/api/annotations/bookdID/${bookID}`)
+  return axios.get(`/api/annotations/bookID/${bookID}`)
 }
