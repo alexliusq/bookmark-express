@@ -38,15 +38,14 @@ const tempAnnotation = {
 
 const mapStateToProps = (state) => {
   return {
-    annotation: state.annotations.annotations,
-    allAnnotations: state.annotations.allAnnotations,
-    bookAnnotations: state.annotations.bookAnnotations
+    annotation: state.annotations.annotation,
+    allAnnotations: state.annotations.allAnnotations || state.annotations.bookAnnotations
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchBookAnnotations: () => dispatch(fetchBookAnnotations()),
+    fetchBookAnnotations: (bookID) => dispatch(fetchBookAnnotations(bookID)),
   }
 }
 
@@ -57,13 +56,21 @@ class Annotations extends React.Component {
 
   componentDidMount() { 
     const {bookID} = this.props.match.params;
-    // this.props.fetchBookAnnotations(bookID);
+    this.props.fetchBookAnnotations(bookID);
   }
 
   render() {
-    return (
-      <AnnotationCard annotation={tempAnnotation}/>
-    )
+    if (this.props.allAnnotations.length === 0) {
+      return (<div>There are no Annotations for this book</div> )
+    } else {
+      return (
+        <React.Fragment>
+          {this.props.allAnnotations.map((anno, idx) => (
+            <AnnotationCard key={idx} annotation={anno}/>
+          ))}
+        </React.Fragment>
+      )
+    }
   }
 }
 
