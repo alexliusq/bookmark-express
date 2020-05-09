@@ -39,7 +39,7 @@ const tempAnnotation = {
 const mapStateToProps = (state) => {
   return {
     annotation: state.annotations.annotation,
-    allAnnotations: state.annotations.allAnnotations || state.annotations.bookAnnotations
+    allAnnotations: state.annotations.allAnnotations
   }
 }
 

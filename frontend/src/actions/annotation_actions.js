@@ -9,7 +9,7 @@ export const RECEIVE_ALL_ANNOTATIONS = "RECEIVE_ALL_ANNOTATIONS";
 export const RECEIVE_BOOK_ANNOTATIONS = "RECEIVE_BOOK_ANNOTATIONS";
 
 function convertTimeToDatetime(annotation) {
-  const time = new Date(...time.split('-'));
+  const time = new Date(...annotation.time.split('-'));
   return {
     ...annotation,
     time

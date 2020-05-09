@@ -6,7 +6,6 @@ import {
 
 const AnnotationsReducer = (state = {
   allAnnotations: [],
-  bookAnnotations: [],
   annotation: {}
 }, action) => {
 
@@ -21,7 +20,7 @@ const AnnotationsReducer = (state = {
       newState.allAnnotations = action.allAnnotations;
       return newState;
     case RECEIVE_BOOK_ANNOTATIONS:
-      newState.bookAnnotations = action.bookAnnotations;
+      newState.allAnnotations = action.bookAnnotations;
       return newState;
     default:
       return newState;
