@@ -70,7 +70,7 @@ async function getMatchingAnnotation(book_id, end) {
   return rows[0].id;
 }
 
-async function addCalibreAnnotation(calibreAnnotation) {
+async function addAnnotation(annotation) {
   const {
     ordernr, kind, bookline, title, author, language, begin, end,
     time, text, statusline, page
@@ -110,6 +110,11 @@ async function addCalibreAnnotation(calibreAnnotation) {
   return rows[0].id;
 }
 
+async function addCalibreAnnotation(calibreAnnotation) {
+  const id = await addAnnotation(calibreAnnotation);
+  return id;
+}
+
 async function insertNote(annotation) {
   const {note, statusline, time, book_id, end} = annotation;
 
@@ -126,9 +131,33 @@ async function insertNote(annotation) {
   return rows[0].id;
 }
 
+async function editAnnotation(annotation) {
+  const {highlight, note, id} = annotation;
+
+  const {rowCount} = await db.query(SQL`
+    UPDATE kindle_annotations
+    SET highlight = ${highlight}, note = ${note}, edited = TRUE
+    WHERE id = ${id}
+  `)
+  return rowCount === 1;
+}
+
+async function deleteAnnotation(annotation) {
+  const {id} = annotation;
+
+  const {rowCount} = await db.query(SQL`
+    DELETE FROM kindle_annotations WHERE id = ${id}
+  `);
+
+  return rowCount === 1;
+}
+
 module.exports = {
   addCalibreAnnotation,
   getAllAnnotations,
   getAnnotationByID,
-  getAnnotationsByBookID
+  getAnnotationsByBookID,
+  addAnnotation,
+  editAnnotation,
+  deleteAnnotation
 }

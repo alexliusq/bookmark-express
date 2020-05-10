@@ -36,7 +36,8 @@ CREATE TABLE "kindle_annotations" (
   "highlight" text,
   "note" text,
   "statusline" text,
-  "page" text
+  "page" text,
+  "edited" boolean DEFAULT false
 );
 
 CREATE TABLE "calibre_authors" (

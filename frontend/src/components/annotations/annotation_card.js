@@ -46,26 +46,26 @@ function getFormattedLocation(annotation) {
   return null;
 }
 
+function AnnotationNote(props) {
+  return (
+    <React.Fragment>
+      <Divider variant="middle" light={true} />
+      <Typography variant="subtitle1" className={classes.noteTitle} >
+        Note
+      </Typography>
+      <Typography variant="body2" component="p">
+        {props.note}
+      </Typography>
+    </React.Fragment>
+  )
+}
+
+
 export default function AnnotationCard(props) {
   const classes = useStyles();
   const annotation = props.annotation;
 
   const bull = <span className={classes.bullet}>•</span>;
-  console.log(annotation.time);
-
-  let note;
-  if (annotation.note) {
-    note =
-      <React.Fragment>
-        <Divider variant="middle" light={true} />
-        <Typography variant="subtitle1" className={classes.noteTitle} >
-          Note
-        </Typography>
-        <Typography variant="body2" component="p">
-          {annotation.note}
-        </Typography>
-      </React.Fragment>;
-  }
 
   return (
     <Card className={classes.root} variant="outlined">
@@ -87,7 +87,7 @@ export default function AnnotationCard(props) {
             Tag
           </Button>
         </CardActions>
-        {note}
+        {annotation.note && <AnnotationNote note={annotation.note} />}
       </CardContent>
     </Card>
   );
