@@ -1,9 +1,11 @@
 import React from 'react';
+import Grid from '@material-ui/core/Grid';
 import { withRouter, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchAnnotation, fetchAllAnnotations,
   fetchBookAnnotations } from '../../actions/annotation_actions';
 import AnnotationCard from './annotation_card';
+import MainGridBox from '../main_presentation';
 
 const tempAnnotation = {
   book_id: 49,
@@ -38,7 +40,6 @@ const tempAnnotation = {
 
 const mapStateToProps = (state) => {
   return {
-    annotation: state.annotations.annotation,
     allAnnotations: state.annotations.allAnnotations
   }
 }
@@ -61,14 +62,25 @@ class Annotations extends React.Component {
 
   render() {
     if (this.props.allAnnotations.length === 0) {
-      return (<div>There are no Annotations for this book</div> )
+      return (
+      <MainGridBox>
+        <div>There are no Annotations for this book</div> 
+      </MainGridBox>
+      )
     } else {
       return (
-        <React.Fragment>
-          {this.props.allAnnotations.map((anno, idx) => (
-            <AnnotationCard key={idx} annotation={anno}/>
-          ))}
-        </React.Fragment>
+        <MainGridBox>
+          <Grid container direction='column'>
+            {
+              this.props.allAnnotations.map((anno, idx) => {
+              return (
+                <Grid item>
+                  <AnnotationCard annotation={anno}/>
+                </Grid>
+              )})
+            }
+          </Grid>
+        </MainGridBox>
       )
     }
   }
