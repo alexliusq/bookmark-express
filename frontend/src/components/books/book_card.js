@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import parse from 'html-react-parser';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -16,21 +17,22 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     backgroundColor: theme.palette.background.paper,
+    // "align-items": "flex-start"
   },
   bookCover: {
     height: '100%',
     width: 'auto'
   },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  }
+  // expandOpen: {
+  //   transform: 'rotate(180deg)',
+  // },
+  // expand: {
+  //   transform: 'rotate(0deg)',
+  //   marginLeft: 'auto',
+  //   transition: theme.transitions.create('transform', {
+  //     duration: theme.transitions.duration.shortest,
+  //   }),
+  // }
 }));
 
 export default function BookCard(props) {
@@ -46,7 +48,7 @@ export default function BookCard(props) {
   return (
     <Card className={classes.root}>
       <CardMedia
-          className={classes.img}
+          className={classes.bookCover}
           component='img'
           image={book.image_url}
         />
@@ -62,10 +64,14 @@ export default function BookCard(props) {
               variant="body2"
               className={classes.inline}
               color="textPrimary">
-{book.pubdate && `${book.pubdate.getMonth()}/${book.pubdate.getDate()}/${book.pubdate.getFullYear()}`}}
+{book.pubdate && `${book.pubdate.getMonth()}/${book.pubdate.getDate()}/${book.pubdate.getFullYear()}`}
         </Typography>
       </CardContent>
-      <CardActions>
+    </ Card>
+  )
+}
+
+{/* <CardActions>
       <IconButton
           className={clsx(classes.expand, {
             [classes.expandOpen]: expanded,
@@ -79,12 +85,11 @@ export default function BookCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography paragraph>Method:</Typography>
+          <Typography variant="caption">
+            {book.description && parse(book.description)}
+          </Typography>
         </CardContent>
-      </Collapse>
-    </ Card>
-  )
-}
+      </Collapse> */}
 
 // const useStyles = makeStyles((theme) => ({
 //   root: {

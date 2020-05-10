@@ -254,19 +254,23 @@ async function linkGoodreads() {
   return res;
 }
 
-async function getBookDetails(goodreadsID) {
-  let res = await db.query(SQL`
-    SELECT * FROM goodreads_details WHERE id = ${goodreadsID}
+async function getBookDetails(book_id) {
+  const {rows} = await db.query(SQL`
+    SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
+    TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
+    FROM books AS a
+    LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
+    LEFT JOIN goodreads_details AS c ON a.isbn = c.isbn13
+    WHERE a.id = ${book_id}
   `);
 
-  console.log(res);
-  return res.rows;
+  return rows[0];
 } 
 
 async function getAllBookDetails(limit = 50) {
   const {rows} = await db.query(SQL`
     SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
-    TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments, b.series
+    TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
     LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
     LEFT JOIN goodreads_details AS c ON a.isbn = c.isbn13

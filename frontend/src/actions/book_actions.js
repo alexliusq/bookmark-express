@@ -4,9 +4,9 @@ export const RECEIVE_BOOK = "RECEIVE_BOOK";
 export const RECEIVE_ALL_BOOKS = "RECEIVE_ALL_BOOKS";
 
 function convertPubdateToDate(book) {
-  if (book.pudate) {
+  if (book.pubdate) {
     const pubdate = new Date(...book.pubdate.split('-'));
-    // console.log(pubdate);
+    console.log(pubdate);
     return {
       ...book,
       pubdate

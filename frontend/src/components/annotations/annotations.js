@@ -80,7 +80,9 @@ class Annotations extends React.Component {
               <BookContainer bookID={this.state.bookID}/>
             </Grid>
             {
-              this.props.allAnnotations.map((anno, idx) => {
+            this.props.allAnnotations.
+              sort((a, b) => a.begin - b.begin)
+              .map((anno, idx) => {
               return (
                 <Grid item>
                   <AnnotationCard annotation={anno}/>
