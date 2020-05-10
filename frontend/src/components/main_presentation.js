@@ -10,7 +10,7 @@ export default function MainGridBox(props) {
         <PrimarySearchAppBar/>
       </Grid>
       <Grid item/>
-      <Grid item sm={11} md={9}>
+      <Grid item xs={11} md={9}>
         {props.children}
       </Grid>
       <Grid item/>

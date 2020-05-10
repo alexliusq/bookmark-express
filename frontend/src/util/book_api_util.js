@@ -4,6 +4,6 @@ export const getAllBookDetails = () => {
   return axios.get('/api/books');
 }
 
-export const getBookDetails = id => {
+export const getBookDetails = (id) => {
   return axios.get(`/api/books/${id}`);
 }

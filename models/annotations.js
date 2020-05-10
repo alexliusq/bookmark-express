@@ -38,7 +38,7 @@ async function getAnnotationByID(annoID) {
     .append(SQL` WHERE id = ${annoID}`);
 
   const {rows} = await db.query(query);
-  
+
   if (!rows[0]) return null;
   return rows[0];
 }
@@ -107,28 +107,6 @@ async function addCalibreAnnotation(calibreAnnotation) {
 
   const {rows} = await db.query(query);
 
-  return rows[0].id;
-
-  // let annotationID;
-  // if (highlight) {
-  //   annotationID = await insertHighlight({
-  //     ...calibreAnnotation,
-  //     highlight,
-  //     book_id
-  //   })
-  // } else if (note) {
-  //   annotationID = await insertNote({
-  //     ...calibreAnnotation,
-  //     note,
-  //     book_id
-  //   })
-  // }
-
-  // return annotationID;
-}
-
-async function insertHighlight(annotation) {
-  
   return rows[0].id;
 }
 

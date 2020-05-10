@@ -6,6 +6,7 @@ import { fetchAnnotation, fetchAllAnnotations,
   fetchBookAnnotations } from '../../actions/annotation_actions';
 import AnnotationCard from './annotation_card';
 import MainGridBox from '../main_presentation';
+import BookContainer from '../books/book_container';
 
 const tempAnnotation = {
   book_id: 49,
@@ -53,24 +54,31 @@ const mapDispatchToProps = (dispatch) => {
 class Annotations extends React.Component {
   constructor(props) {
     super(props);
+    const {bookID} = this.props.match.params;
+    this.state = {
+      bookID
+    }
   }
 
   componentDidMount() { 
-    const {bookID} = this.props.match.params;
-    this.props.fetchBookAnnotations(bookID);
+    this.props.fetchBookAnnotations(this.state.bookID);
   }
 
   render() {
     if (this.props.allAnnotations.length === 0) {
       return (
       <MainGridBox>
+        <BookContainer bookID={this.state.bookID}/>
         <div>There are no Annotations for this book</div> 
       </MainGridBox>
       )
     } else {
       return (
         <MainGridBox>
-          <Grid container direction='column'>
+          <Grid container direction='column' spacing={1}>
+            <Grid item>
+              <BookContainer bookID={this.state.bookID}/>
+            </Grid>
             {
               this.props.allAnnotations.map((anno, idx) => {
               return (
