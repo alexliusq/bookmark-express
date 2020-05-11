@@ -6,6 +6,11 @@ const SQL = require('sql-template-strings');
 const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
+const querySelectCols = () => (SQL`
+  book_id, bookline, title, author, language, begin, "end",
+  TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
+  `);
+
 const annotationsQueryTemplate = () => (SQL`
 SELECT book_id, bookline, title, author, language, begin, "end",
 TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
@@ -138,6 +143,7 @@ async function editAnnotation(annotation) {
     UPDATE kindle_annotations
     SET highlight = ${highlight}, note = ${note}, edited = TRUE
     WHERE id = ${id}
+    RETURNING 
   `)
   return rowCount === 1;
 }

@@ -29,6 +29,28 @@ router.get('/bookID/:id', (req, res) => {
     })
 })
 
-
+router.put('/', (req, res) => {
+  const editedAnnotation = req.body;
+  console.log(req.body);
+  console.log(editedAnnotation);
+})
 
 module.exports = router;
+
+// router.post('/',
+//     passport.authenticate('jwt', { session: false }),
+//     (req, res) => {
+//       const { errors, isValid } = validateTweetInput(req.body);
+        
+//       if (!isValid) {
+//         return res.status(400).json(errors);
+//       }
+  
+//       const newTweet = new Tweet({
+//         text: req.body.text,
+//         user: req.user.id
+//       });
+  
+//       newTweet.save().then(tweet => res.json(tweet));
+//     }
+//   );
