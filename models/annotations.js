@@ -6,18 +6,17 @@ const SQL = require('sql-template-strings');
 const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
-const querySelectCols = () => (SQL`
+const querySelectCols =  ` 
   book_id, bookline, title, author, language, begin, "end",
   TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
-  `);
+  `;
 
-const annotationsQueryTemplate = () => (SQL`
-SELECT book_id, bookline, title, author, language, begin, "end",
-TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
-FROM kindle_annotations `);
+const annosSelectQuery = () => (
+  SQL('SELECT' + querySelectCols + ' FROM kindle_annotations')
+);
 
 async function getAllAnnotations(limit = 50) {
-  const query = annotationsQueryTemplate()
+  const query = annosSelectQuery()
     .append(SQL`LIMIT ${limit}`);
 
   const {rows} = await db.query(query);
@@ -31,15 +30,15 @@ async function getAnnotationsByBookTitle(title) {
 }
 
 async function getAnnotationsByBookID(book_id) {
-  const query = annotationsQueryTemplate()
-    .append(SQL`WHERE book_id = ${book_id}`);
+  const query = annosSelectQuery()
+    .append(SQL` WHERE book_id = ${book_id}`);
 
   const {rows} = await db.query(query);
   return rows;
 }
 
 async function getAnnotationByID(annoID) {
-  const query = annotationsQueryTemplate()
+  const query = annosSelectQuery()
     .append(SQL` WHERE id = ${annoID}`);
 
   const {rows} = await db.query(query);
@@ -67,9 +66,10 @@ kind: 'highlight',
   }
 */
 
-async function getMatchingAnnotation(book_id, end) {
+async function getMatchingAnnotationID(book_id, begin, end) {
   const {rows} = await db.query(SQL`
-  SELECT id FROM kindle_annotations WHERE book_id = ${book_id} AND "end" = ${end}
+  SELECT id FROM kindle_annotations
+  WHERE book_id = ${book_id} AND "end" = ${end} AND begin = ${begin}
   `);
   if (!rows[0]) return null;
   return rows[0].id;
@@ -79,7 +79,7 @@ async function addAnnotation(annotation) {
   const {
     ordernr, kind, bookline, title, author, language, begin, end,
     time, text, statusline, page
-  } = calibreAnnotation;
+  } = annotation;
 
   let book_id = await Books.getBookID(title);
   if (!book_id) {
@@ -87,7 +87,7 @@ async function addAnnotation(annotation) {
     book_id = await Books.insertBook(title);
   }
 
-  let id = await getMatchingAnnotation(book_id, end);
+  let id = await getMatchingAnnotationID(book_id, begin, end);
   id = id || ordernr;
 
   const highlight = kind === 'highlight' ? text : null;
@@ -108,54 +108,56 @@ async function addAnnotation(annotation) {
   if (highlight) query.append(SQL`, highlight = ${highlight}`);
   if (note) query.append(SQL`, note = ${note}`);
 
-  query.append(' RETURNING id');
+  query.append(' RETURNING ' + querySelectCols);
 
   const {rows} = await db.query(query);
 
-  return rows[0].id;
+  return rows[0];
 }
 
 async function addCalibreAnnotation(calibreAnnotation) {
-  const id = await addAnnotation(calibreAnnotation);
-  return id;
+  const row = await addAnnotation(calibreAnnotation);
+  return row;
 }
 
-async function insertNote(annotation) {
-  const {note, statusline, time, book_id, end} = annotation;
+// async function insertNote(annotation) {
+//   const {note, statusline, time, book_id, end} = annotation;
 
-  const {rows} = await db.query(SQL`
-    UPDATE kindle_annotations
-    SET
-      note = ${note},
-      statusline = ${statusline},
-      time = ${time}
-    WHERE
-      book_id = ${book_id} AND "end" = ${end}
-    RETURNING id;
-  `);
-  return rows[0].id;
-}
+//   const {rows} = await db.query(SQL`
+//     UPDATE kindle_annotations
+//     SET
+//       note = ${note},
+//       statusline = ${statusline},
+//       time = ${time}
+//     WHERE
+//       book_id = ${book_id} AND "end" = ${end}
+//     RETURNING id;
+//   `);
+//   return rows[0].id;
+// }
 
 async function editAnnotation(annotation) {
   const {highlight, note, id} = annotation;
 
-  const {rowCount} = await db.query(SQL`
+  const { rows } = await db.query(SQL`
     UPDATE kindle_annotations
     SET highlight = ${highlight}, note = ${note}, edited = TRUE
     WHERE id = ${id}
     RETURNING 
-  `)
-  return rowCount === 1;
+  `.append(querySelectCols)
+  )
+  return rows[0];
 }
 
 async function deleteAnnotation(annotation) {
   const {id} = annotation;
 
-  const {rowCount} = await db.query(SQL`
-    DELETE FROM kindle_annotations WHERE id = ${id}
-  `);
+  const { rows } = await db.query(SQL`
+    DELETE FROM kindle_annotations WHERE id = ${id} RETURNING `
+    .append(querySelectCols)
+  );
 
-  return rowCount === 1;
+  return rows[0];
 }
 
 module.exports = {

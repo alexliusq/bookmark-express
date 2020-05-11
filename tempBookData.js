@@ -92,10 +92,10 @@ function getBookMetadata(title) {
 
 debugger;
 
-Annotations.getAnnotationByID(9092)
-  .then(anno => console.log(anno));
+// Annotations.getAnnotationByID(9092)
+//   .then(anno => console.log(anno));
 
-// addAllAnnotations();
+addAllAnnotations();
 // let annos = tempAnnotations.filter(anno => {
 //   return anno.title === 'Sapiens' && anno.end > 2030 && anno.end < 2040;
 // })

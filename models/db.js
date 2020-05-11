@@ -24,19 +24,16 @@ module.exports = {
     // logQuery(sql_template_query.text, 
     //   sql_template_query.values, start);
     // try {
-      console.log(sql_template_query);
+    console.log(sql_template_query);
 
-      let res = await pool.query(sql_template_query);
-      
-      logQuery(sql_template_query.text,
-        sql_template_query.values);
-      const duration = Date.now() - start;
+    let res = await pool.query(sql_template_query);
+    
+    logQuery(sql_template_query.text,
+      sql_template_query.values);
+    const duration = Date.now() - start;
 
-      console.log("Previous query took: ", duration, "ms");
-      return res;
-    // } catch(err) {
-    //   console.error('Error executing query', err);
-    // }
+    console.log("Previous query took: ", duration, "ms");
+    return res;
   }
   // getClient: (callback) => {
   //   pool.connect((err, client, done) => {

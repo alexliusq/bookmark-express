@@ -14,12 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^5.1.0",
+    "concurrently": "^5.2.0",
     "dateformat": "^3.0.3",
     "express": "^4.17.1",
     "express-paginate": "^1.0.0",
     "goodreads-api-node": "0.0.10",
-    "pg": "^8.0.2",
+    "pg": "^8.1.0",
     "sql-template-strings": "^2.2.2",
     "validator": "^13.0.0"
   }

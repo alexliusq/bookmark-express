@@ -30,9 +30,30 @@ router.get('/bookID/:id', (req, res) => {
 })
 
 router.put('/', (req, res) => {
-  const editedAnnotation = req.body;
-  console.log(req.body);
-  console.log(editedAnnotation);
+  const editAnno = req.body;
+  Annotations.editAnnotation(editAnno)
+    .then(anno => res.json(anno))
+    .catch(err => {
+      res.status(404)
+    })
+})
+
+router.delete('/', (req, res) => {
+  const deleteAnno = req.body;
+  Annotations.deleteAnnotation(deleteAnno)
+    .then(anno => res.json(anno))
+    .catch(err => {
+      res.status(404)
+    })
+})
+
+router.post('/', (req, res) => {
+  const createAnno = req.body;
+  Annotations.addAnnotation(createAnno)
+    .then(anno => res.json(anno))
+    .catch(err => {
+      res.status(404).json(err);
+    })
 })
 
 module.exports = router;
