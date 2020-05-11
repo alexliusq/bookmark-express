@@ -37,6 +37,7 @@ CREATE TABLE "kindle_annotations" (
   "note" text,
   "statusline" text,
   "page" text,
+  "ordernr" int,
   "edited" boolean DEFAULT false
 );
 

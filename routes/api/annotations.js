@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const validateAnnotation = require('../../validation/annotations');
 const Annotations = require('../../models/annotations');
 // const { validateBookDetails } = require('../../validation/books');
 
@@ -30,8 +31,16 @@ router.get('/bookID/:id', (req, res) => {
 })
 
 router.put('/', (req, res) => {
-  const editAnno = req.body;
-  Annotations.editAnnotation(editAnno)
+  const { errors, isValid } = validateAnnotation(req.body);
+        
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+  if (!req.body.id) {
+    return res.status(400).json({'errors': 'Edit requires id'})
+  }
+
+  Annotations.editAnnotation(req.body)
     .then(anno => res.json(anno))
     .catch(err => {
       res.status(404)
@@ -40,6 +49,9 @@ router.put('/', (req, res) => {
 
 router.delete('/', (req, res) => {
   const deleteAnno = req.body;
+  if (!req.body.id) {
+    return res.status(400).json({'errors': 'Delete requires id'})
+  }
   Annotations.deleteAnnotation(deleteAnno)
     .then(anno => res.json(anno))
     .catch(err => {
@@ -48,8 +60,24 @@ router.delete('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  const createAnno = req.body;
-  Annotations.addAnnotation(createAnno)
+  const { errors, isValid } = validateAnnotation(req.body);
+        
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Annotations.addAnnotation(req.body)
+    .then(anno => res.json(anno))
+    .catch(err => {
+      res.status(404).json(err);
+    })
+})
+
+router.post('/calibre', (req, res) => {
+  const anno = req.body;
+  if (!anno.kind) return res.status(404).json({'kind': 'Annotation needs kind'});
+  if (!anno.text) return res.status(404).json({'text': 'Annotation needs text'});
+  Annotations.addCalibreAnnotation(anno)
     .then(anno => res.json(anno))
     .catch(err => {
       res.status(404).json(err);

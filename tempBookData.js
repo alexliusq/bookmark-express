@@ -95,7 +95,7 @@ debugger;
 // Annotations.getAnnotationByID(9092)
 //   .then(anno => console.log(anno));
 
-addAllAnnotations();
+// addAllAnnotations();
 // let annos = tempAnnotations.filter(anno => {
 //   return anno.title === 'Sapiens' && anno.end > 2030 && anno.end < 2040;
 // })
@@ -166,7 +166,7 @@ timestamp: "2019-11-18T02:18:59+00:00"
 title: "How to Get Filthy Rich in Rising Asia: A Novel"
 title_sort: "How to Get Filthy Rich in Rising Asia: A Novel"
 user_categories: {}
-user_metadata: {#mm_annotations: {…}, #isbn: {…}}
+user_metadata: {#mm_annotations: {…}, #isbn: {…}}Pbook
 uuid: "4d8afd1b-59e1-49f7-89d5-b9bc56fd3c1b"
 */
 

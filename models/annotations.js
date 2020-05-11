@@ -7,18 +7,18 @@ const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
 const querySelectCols =  ` 
-  book_id, bookline, title, author, language, begin, "end",
+  id, book_id, bookline, title, author, language, begin, "end",
   TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
   `;
 
 const annosSelectQuery = () => (
-  SQL('SELECT' + querySelectCols + ' FROM kindle_annotations')
+  SQL(['SELECT ' + querySelectCols + ' FROM kindle_annotations'])
 );
 
 async function getAllAnnotations(limit = 50) {
   const query = annosSelectQuery()
-    .append(SQL`LIMIT ${limit}`);
-
+    .append(SQL` LIMIT ${limit}`);
+  console.log(query.sql);
   const {rows} = await db.query(query);
   return rows;
 }
@@ -66,10 +66,10 @@ kind: 'highlight',
   }
 */
 
-async function getMatchingAnnotationID(book_id, begin, end) {
+async function getMatchingAnnotationID(book_id, end) {
   const {rows} = await db.query(SQL`
   SELECT id FROM kindle_annotations
-  WHERE book_id = ${book_id} AND "end" = ${end} AND begin = ${begin}
+  WHERE book_id = ${book_id} AND "end" = ${end} 
   `);
   if (!rows[0]) return null;
   return rows[0].id;
@@ -77,8 +77,8 @@ async function getMatchingAnnotationID(book_id, begin, end) {
 
 async function addAnnotation(annotation) {
   const {
-    ordernr, kind, bookline, title, author, language, begin, end,
-    time, text, statusline, page
+    ordernr, note, highlight, bookline, title, author, language, begin, end,
+    time, statusline, page
   } = annotation;
 
   let book_id = await Books.getBookID(title);
@@ -87,52 +87,58 @@ async function addAnnotation(annotation) {
     book_id = await Books.insertBook(title);
   }
 
-  let id = await getMatchingAnnotationID(book_id, begin, end);
-  id = id || ordernr;
+  let matchID = await getMatchingAnnotationID(book_id, end);
 
-  const highlight = kind === 'highlight' ? text : null;
-  const note = kind === 'note' ? text : null;
+  const query = SQL``;
+  console.log(matchID);
+  if (matchID) {
+    query.append(SQL`UPDATE kindle_annotations SET `);
 
-  const query = SQL`
-  INSERT INTO kindle_annotations
-    (id, book_id, bookline, title, author, language, begin, "end",
-      time, highlight, note, statusline, page)
-  VALUES
-    (${id}, ${book_id}, ${bookline}, ${title}, ${author}, ${language},
-      ${begin}, ${end}, ${time}, ${highlight}, ${note}, ${statusline}, ${page}
-    )
-  ON CONFLICT (id)
-  DO UPDATE SET
-  statusline = EXCLUDED.statusline, time = EXCLUDED.time`
+    if (highlight) query.append(SQL` highlight = ${highlight} `);
+    if (note) query.append(SQL` note = ${note} `);
 
-  if (highlight) query.append(SQL`, highlight = ${highlight}`);
-  if (note) query.append(SQL`, note = ${note}`);
+    query.append(` WHERE id = ${matchID}`);
+  } else {
+    query.append(SQL`
+    INSERT INTO kindle_annotations
+      (book_id, bookline, title, author, language, begin, "end",
+        time, highlight, note, statusline, page, ordernr)
+    VALUES
+      (${book_id}, ${bookline}, ${title}, ${author}, ${language}, ${begin},
+        ${end}, ${time}, ${highlight}, ${note}, ${statusline}, ${page}, ${ordernr}
+      )
+    ON CONFLICT (id)
+    DO UPDATE SET
+    statusline = EXCLUDED.statusline, time = EXCLUDED.time`
+    );
+  }
 
   query.append(' RETURNING ' + querySelectCols);
 
-  const {rows} = await db.query(query);
-
+  const { rows } = await db.query(query);
   return rows[0];
 }
 
 async function addCalibreAnnotation(calibreAnnotation) {
-  const row = await addAnnotation(calibreAnnotation);
+  const {text, kind} = calibreAnnotation;
+  const highlight = kind === 'highlight' ? text : null;
+  const note = kind === 'note' ? text : null;
+
+  const row = await addAnnotation(
+    {
+      ...calibreAnnotation,
+      highlight,
+      note
+    });
   return row;
 }
 
-// async function insertNote(annotation) {
+// async function updateAnnotation(annotation) {
 //   const {note, statusline, time, book_id, end} = annotation;
 
-//   const {rows} = await db.query(SQL`
-//     UPDATE kindle_annotations
-//     SET
-//       note = ${note},
-//       statusline = ${statusline},
-//       time = ${time}
-//     WHERE
-//       book_id = ${book_id} AND "end" = ${end}
+//   const {rows} = await db.query(
 //     RETURNING id;
-//   `);
+//   );
 //   return rows[0].id;
 // }
 
