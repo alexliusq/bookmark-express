@@ -20,7 +20,7 @@ const AnnotationsReducer = (state = {
       newState.allAnnotations = action.allAnnotations;
       return newState;
     case RECEIVE_BOOK_ANNOTATIONS:
-      newState.allAnnotations = action.bookAnnotations;
+      newState.allAnnotations = action.allAnnotations;
       return newState;
     default:
       return newState;

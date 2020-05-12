@@ -16,6 +16,14 @@ export const addAnnotation = (data) => {
   return axios.post('/api/annotations/', data);
 }
 
+export const addCalibreAnnotation = (data) => {
+  return axios.post('/api/annotations/calibre/', data);
+}
+
 export const editAnnotation = (data) => {
-  return axios.put('/api/annotaitons/', data);
+  return axios.put('/api/annotations/', data);
+}
+
+export const deleteAnnotation = (data) => {
+  return axios.delete('/api/annotations/', data);
 }
