@@ -4,9 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
 
 import EditIcon from '@material-ui/icons/Edit';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
@@ -14,10 +16,9 @@ import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '25ch'
-    }
+    // '& .MuiTextField-root': {
+    //   margin: theme.spacing(1),
+    // }
   },
   bullet: {
     display: 'inline-block',
@@ -51,6 +52,7 @@ function getFormattedLocation(annotation) {
 }
 
 function AnnotationNote(props) {
+  const classes = useStyles();
   return (
     <React.Fragment>
       <Typography variant="subtitle1" className={classes.noteTitle} >
@@ -63,55 +65,56 @@ function AnnotationNote(props) {
   )
 }
 
-function displayHighlight(props) {
-  const annotation = props.annotation;
-  return (
-  <React.Fragment>
-    <Typography className={classes.pos} color="textSecondary">
-  {getFormattedLocation(annotation)}{bull}{dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")} 
-    </Typography>
-    <Typography className={classes.quote} gutterBottom={true}>
-      {annotation.highlight}
-    </Typography>
-  </React.Fragment>
-  )
-}
-
-function editHighlight(props) {
-  
-}
 
 export default function AnnotationCreateCard(props) {
   const classes = useStyles();
-  const annotation = props.annotation;
+  const annotation = props.annotation || {};
 
   const bull = <span className={classes.bullet}>•</span>;
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardActions className={classes.cardActions}>
-          <Button size="small" variant="contained">
-            Save
-          </Button>
-          <Button size="small" variant="text">
-            Cancel
-          </Button>
-          <Button size="small" variant="contained" >
-            Delete
-          </Button>
+      <CardHeader
+        title="Editing Annotation"
+        action={
+        <CardActions className={classes.cardActions}>
+            <Button size="small" variant="contained">
+              Save
+            </Button>
+            <Button size="small" variant="text">
+              Cancel
+            </Button>
+            <Button size="small" variant="text" >
+              Delete
+            </Button>
         </CardActions>
+        }
+      />
       <CardContent>
       <TextField
-          id="outlined-multiline-flexible"
-          label="Multiline"
+          id="highlight"
+          label="Highlight"
           multiline
-          rowsMax={20}
+          fullWidth
+          rowsMax={10}
           value={annotation.highlight}
-          onChange={handleChange}
           variant="outlined"
         />
+      <br />
+      <br />
       <Divider variant="middle" light={true} />
-      
+      <Typography variant="subtitle1" className={classes.noteTitle} >
+        Note
+      </Typography>
+      <TextField
+          id="note"
+          label="Note"
+          multiline
+          fullWidth
+          rowsMax={5}
+          value={annotation.note}
+          variant="outlined"
+        />
       </CardContent>
     </Card>
   );

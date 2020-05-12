@@ -47,6 +47,7 @@ function getFormattedLocation(annotation) {
 }
 
 function AnnotationNote(props) {
+  const classes = useStyles();
   return (
     <React.Fragment>
       <Divider variant="middle" light={true} />
@@ -60,21 +61,6 @@ function AnnotationNote(props) {
   )
 }
 
-function displayHighlight(props) {
-  const annotation = props.annotation;
-  return (
-  <React.Fragment>
-    <Typography className={classes.pos} color="textSecondary">
-  {getFormattedLocation(annotation)}{bull}{dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")} 
-    </Typography>
-    <Typography className={classes.quote} gutterBottom={true}>
-      {annotation.highlight}
-    </Typography>
-  </React.Fragment>
-  )
-}
-
-
 export default function AnnotationCard(props) {
   const classes = useStyles();
   const annotation = props.annotation;
@@ -84,8 +70,12 @@ export default function AnnotationCard(props) {
   return (
     <Card className={classes.root} variant="outlined">
       <CardContent>
-        
-
+        <Typography className={classes.pos} color="textSecondary">
+  {getFormattedLocation(annotation)}{bull}{dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")} 
+        </Typography>
+        <Typography className={classes.quote} gutterBottom={true}>
+         {annotation.highlight}
+        </Typography>
         <CardActions className={classes.cardActions}>
           <Button size="small" variant="outlined" endIcon={<EditIcon />}>
             Edit
