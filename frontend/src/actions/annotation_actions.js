@@ -47,6 +47,9 @@ export const removeAnnotation = (annotation) => ({
   annotationToDelete: annotation
 });
 
+//since naming collisions are a pain I decided to combine the http method
+//and the action to name the thunks
+
 export const postCreateAnnotation = (annotation) => (dispatch) => {
   postAnnotation(annotation)
     .then(anno => dispatch(addAnnotation(annotation)))
