@@ -34,29 +34,32 @@ export const receiveAllAnnotations = (allAnnotations) => ({
 
 export const editAnnotation = (annotation) => ({
   type: EDIT_ANNOTATION,
-  allAnnotations: allAnnotations.map(anno => {
-    return anno.id === annotation.id
-  })
+  annotationToEdit: annotation
 })
 
 export const addAnnotation = (annotation) => ({
-
+  type: ADD_ANNOTATION,
+  annotationToAdd: annotation 
 });
 
 export const removeAnnotation = (annotation) => ({
   type: REMOVE_ANNOTATION,
-  allAnnotations: allAnnotations.filter(anno => {
-    return anno.id !== annotation.id
-  })
-})
+  annotationToDelete: annotation
+});
 
-export const deleteAnnotation = (annotation) => (dispatch) => {
+export const postCreateAnnotation = (annotation) => (dispatch) => {
+  postAnnotation(annotation)
+    .then(anno => dispatch(addAnnotation(annotation)))
+    .catch(err => console.log(err))
+}
+
+export const deleteRemoveAnnotation = (annotation) => (dispatch) => {
   deleteAnnotation(annotation)
     .then(anno => dispatch(removeAnnotation(anno.data)))
     .catch(err => console.log(err));
 }
 
-export const putAnnotation = (annotation) => (dispatch) => {
+export const putEditAnnotation = (annotation) => (dispatch) => {
   putAnnotation(annotation)
     .then(anno => dispatch(editAnnotation(anno.data)))
     .catch(err => console.log(err));

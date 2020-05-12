@@ -26,13 +26,19 @@ const AnnotationsReducer = (state = {
       newState.allAnnotations = action.allAnnotations;
       return newState;
     case EDIT_ANNOTATION:
-      newState.allAnnotations = action.allAnnotations;
+      newState.allAnnotations = state.allAnnotations
+        .map(anno => {
+          return anno.id === action.annotationToEdit.id
+        });
       return newState;
     case REMOVE_ANNOTATION:
-      newState.allAnnotations = action.allAnnotations;
+      newState.allAnnotations = state.allAnnotations
+        .filter(anno => {
+          return anno.id !== action.annotationToDelete.id
+        });
       return newState;
     case ADD_ANNOTATION:
-      newState.allAnnotations = action.allAnnotations;
+      newState.allAnnotations = [...state.allAnnotations, action.annotationToAdd];
       return newState;
     default:
       return newState;

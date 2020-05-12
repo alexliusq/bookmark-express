@@ -7,13 +7,17 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+
 import EditIcon from '@material-ui/icons/Edit';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
-    minWidth: 275,
+    '& .MuiTextField-root': {
+      margin: theme.spacing(1),
+      width: '25ch'
+    }
   },
   bullet: {
     display: 'inline-block',
@@ -37,7 +41,7 @@ const useStyles = makeStyles({
     marginTop: '0.5rem',
     color: 'rgba(0, 0, 0, 0.5)'
   }
-});
+}));
 
 function getFormattedLocation(annotation) {
   const {begin, end, page} = annotation;
@@ -49,7 +53,6 @@ function getFormattedLocation(annotation) {
 function AnnotationNote(props) {
   return (
     <React.Fragment>
-      <Divider variant="middle" light={true} />
       <Typography variant="subtitle1" className={classes.noteTitle} >
         Note
       </Typography>
@@ -74,8 +77,11 @@ function displayHighlight(props) {
   )
 }
 
+function editHighlight(props) {
+  
+}
 
-export default function AnnotationCard(props) {
+export default function AnnotationCreateCard(props) {
   const classes = useStyles();
   const annotation = props.annotation;
 
@@ -83,61 +89,30 @@ export default function AnnotationCard(props) {
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardContent>
-        
-
-        <CardActions className={classes.cardActions}>
-          <Button size="small" variant="outlined" endIcon={<EditIcon />}>
-            Edit
+      <CardActions className={classes.cardActions}>
+          <Button size="small" variant="contained">
+            Save
           </Button>
-          <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
-            Favorite
+          <Button size="small" variant="text">
+            Cancel
           </Button>
-          <Button size="small" variant="outlined" endIcon={<LocalOfferRoundedIcon />}>
-            Tag
+          <Button size="small" variant="contained" >
+            Delete
           </Button>
         </CardActions>
-        {annotation.note && <AnnotationNote note={annotation.note} />}
+      <CardContent>
+      <TextField
+          id="outlined-multiline-flexible"
+          label="Multiline"
+          multiline
+          rowsMax={20}
+          value={annotation.highlight}
+          onChange={handleChange}
+          variant="outlined"
+        />
+      <Divider variant="middle" light={true} />
+      
       </CardContent>
     </Card>
   );
 }
-
-/*
-<CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
-*/
-
-/*
-<Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        endIcon={<Icon>send</Icon>}
-      >
-        Send
-      </Button>
-      <Button
-        variant="contained"
-        color="default"
-        className={classes.button}
-        startIcon={<CloudUploadIcon />}
-      >
-        Upload
-      </Button>
-*/
