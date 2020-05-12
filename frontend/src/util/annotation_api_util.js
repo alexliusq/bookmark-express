@@ -12,15 +12,15 @@ export const getAnnotationByBookID = bookID => {
   return axios.get(`/api/annotations/bookID/${bookID}`)
 }
 
-export const addAnnotation = (data) => {
+export const postAnnotation = (data) => {
   return axios.post('/api/annotations/', data);
 }
 
-export const addCalibreAnnotation = (data) => {
+export const postCalibreAnnotation = (data) => {
   return axios.post('/api/annotations/calibre/', data);
 }
 
-export const editAnnotation = (data) => {
+export const putAnnotation = (data) => {
   return axios.put('/api/annotations/', data);
 }
 
