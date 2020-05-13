@@ -48,7 +48,7 @@ CREATE TABLE "annotations_tags" (
 
 CREATE TABLE "tags" (
   "id" SERIAL PRIMARY KEY,
-  "tag" text
+  "tag" text UNIQUE NOT NULL
 );
 
 CREATE TABLE "calibre_authors" (
