@@ -54,7 +54,7 @@ function EditCardActions(props) {
     <Button size="small" variant="contained">
       Save
     </Button>
-    <Button size="small" variant="text">
+    <Button size="small" variant="text" onClick={props.handleCancel}>
       Cancel
     </Button>
     <Button size="small" variant="text" >
@@ -62,10 +62,6 @@ function EditCardActions(props) {
     </Button>
   </CardActions>
   )
-}
-
-function handleSave(event) {
-  event.preventDefault();
 }
 
 export default function AnnotationEditCard(props) {
@@ -84,7 +80,10 @@ export default function AnnotationEditCard(props) {
     <Card className={classes.root} variant="outlined">
       <CardHeader
         title="Editing Annotation"
-        action={<EditCardActions />}
+        action={<EditCardActions 
+          handleEdit = {props.handleEdit}
+          handleCancel = {props.handleCancel}
+        />}
       />
       <CardContent>
         <TextField

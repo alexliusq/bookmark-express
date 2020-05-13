@@ -16,11 +16,14 @@ class AnnotationCardContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditing: true,
+      isEditing: false,
+      isCreating: false,
       annotation: props.annotation
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   handleInputChange(event) {
@@ -36,17 +39,36 @@ class AnnotationCardContainer extends React.Component {
     });
   }
 
+  handleEdit(event) {
+    event.preventDefault();
+    this.setState({
+      isEditing: true
+    })
+  }
+
+  handleCancel(event) {
+    event.preventDefault();
+    this.setState({
+      isEditing: false,
+      isCreating: false
+    })
+  }
+
   render() {
     if (this.state.isEditing) {
       return (
         <AnnotationEditCard
         annotation={this.state.annotation}
         handleInputChange={this.handleInputChange}
+        handleCancel={this.handleCancel}
         />
       )
     } else {
       return (
-        <AnnotationCard annotation={this.props.annotation}/> 
+        <AnnotationCard
+        annotation={this.props.annotation}
+        handleEdit={this.handleEdit}
+        /> 
       )
     }
   }

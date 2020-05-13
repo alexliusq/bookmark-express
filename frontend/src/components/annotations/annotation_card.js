@@ -77,7 +77,8 @@ export default function AnnotationCard(props) {
          {annotation.highlight}
         </Typography>
         <CardActions className={classes.cardActions}>
-          <Button size="small" variant="outlined" endIcon={<EditIcon />}>
+          <Button size="small" variant="outlined" endIcon={<EditIcon />}
+            onClick={props.handleEdit}>
             Edit
           </Button>
           <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
