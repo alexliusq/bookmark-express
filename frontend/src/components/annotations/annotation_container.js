@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { putEditAnnotation, deleteRemoveAnnotation} from '../../actions/annotation_actions';
 import AnnotationCard from './annotation_card';
 import AnnotationEditCard from './annotation_edit_card';
+import Collapse from '@material-ui/core/Collapse';
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -55,22 +56,24 @@ class AnnotationCardContainer extends React.Component {
   }
 
   render() {
-    if (this.state.isEditing) {
-      return (
-        <AnnotationEditCard
+    return (
+    <React.Fragment>
+    <Collapse in={this.state.isEditing}>
+      <AnnotationEditCard
         annotation={this.state.annotation}
         handleInputChange={this.handleInputChange}
         handleCancel={this.handleCancel}
         />
-      )
-    } else {
-      return (
-        <AnnotationCard
-        annotation={this.props.annotation}
-        handleEdit={this.handleEdit}
-        /> 
-      )
-    }
+    </Collapse>
+    <Collapse in={!this.state.isEditing}>
+    <AnnotationCard
+    annotation={this.props.annotation}
+    handleEdit={this.handleEdit}
+    /> 
+    </Collapse>
+    
+    </React.Fragment>
+    )
   }
 }
 
