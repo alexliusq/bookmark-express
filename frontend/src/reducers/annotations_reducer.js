@@ -26,9 +26,11 @@ const AnnotationsReducer = (state = {
       newState.allAnnotations = action.allAnnotations;
       return newState;
     case EDIT_ANNOTATION:
+      console.log(action);
       newState.allAnnotations = state.allAnnotations
         .map(anno => {
-          return anno.id === action.annotationToEdit.id
+          if (anno.id === action.annotationToEdit.id) return action.annotationToEdit;
+          return anno
         });
       return newState;
     case REMOVE_ANNOTATION:

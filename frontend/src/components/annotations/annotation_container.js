@@ -25,6 +25,8 @@ class AnnotationCardContainer extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleEditSave = this.handleEditSave.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleInputChange(event) {
@@ -33,22 +35,40 @@ class AnnotationCardContainer extends React.Component {
     const value = target.value;
     console.log(id, value);
 
+    const newAnno = {...this.state.annotation, [id]: value}
     this.setState({
-      annotation: {
-        [id]: value
-      }
+      annotation: newAnno
     });
   }
 
   handleEdit(event) {
-    event.preventDefault();
+    // event.preventDefault();
     this.setState({
       isEditing: true
     })
   }
 
+  handleEditSave(event) {
+    // event.preventDefault();
+    this.props.editAnno(this.state.annotation);
+    this.setState({
+      isEditing: false
+    })
+  }
+
+  handleDelete(event) {
+    // event.preventDefault();
+    if (window.confirm("Are You Sure you Want to Delete this Annotation")) {
+      console.log(this.state.annotation);
+      this.props.removeAnnotation(this.state.annotation);
+      this.setState({
+        isEditing: false
+      })
+    }
+  }
+
   handleCancel(event) {
-    event.preventDefault();
+    // event.preventDefault();
     this.setState({
       isEditing: false,
       isCreating: false
@@ -62,7 +82,9 @@ class AnnotationCardContainer extends React.Component {
       <AnnotationEditCard
         annotation={this.state.annotation}
         handleInputChange={this.handleInputChange}
+        handleEditSave={this.handleEditSave}
         handleCancel={this.handleCancel}
+        handleDelete={this.handleDelete}
         />
     </Collapse>
     <Collapse in={!this.state.isEditing}>
@@ -71,7 +93,6 @@ class AnnotationCardContainer extends React.Component {
     handleEdit={this.handleEdit}
     /> 
     </Collapse>
-    
     </React.Fragment>
     )
   }

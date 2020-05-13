@@ -51,13 +51,13 @@ function EditCardActions(props) {
   const classes = useStyles();
   return (
   <CardActions className={classes.cardActions}>
-    <Button size="small" variant="contained">
+    <Button size="small" variant="contained" onClick={props.handleEditSave}>
       Save
     </Button>
     <Button size="small" variant="text" onClick={props.handleCancel}>
       Cancel
     </Button>
-    <Button size="small" variant="text" >
+    <Button size="small" variant="text" onClick={props.handleDelete}>
       Delete
     </Button>
   </CardActions>
@@ -83,6 +83,8 @@ export default function AnnotationEditCard(props) {
         action={<EditCardActions 
           handleEdit = {props.handleEdit}
           handleCancel = {props.handleCancel}
+          handleDelete = {props.handleDelete}
+          handleEditSave = {props.handleEditSave}
         />}
       />
       <CardContent>
@@ -92,7 +94,7 @@ export default function AnnotationEditCard(props) {
             multiline
             fullWidth
             rowsMax={10}
-            value={annotation.highlight}
+            value={annotation.highlight || ""}
             onChange={props.handleInputChange}
             variant="outlined"
           />
@@ -108,7 +110,7 @@ export default function AnnotationEditCard(props) {
             multiline
             fullWidth
             rowsMax={5}
-            value={annotation.note}
+            value={annotation.note || ""}
             onChange={props.handleInputChange}
             variant="outlined"
           />

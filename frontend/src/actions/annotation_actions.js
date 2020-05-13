@@ -34,17 +34,17 @@ export const receiveAllAnnotations = (allAnnotations) => ({
 
 export const editAnnotation = (annotation) => ({
   type: EDIT_ANNOTATION,
-  annotationToEdit: annotation
+  annotationToEdit: convertTimeToDatetime(annotation)
 })
 
 export const addAnnotation = (annotation) => ({
   type: ADD_ANNOTATION,
-  annotationToAdd: annotation 
+  annotationToAdd: convertTimeToDatetime(annotation) 
 });
 
 export const removeAnnotation = (annotation) => ({
   type: REMOVE_ANNOTATION,
-  annotationToDelete: annotation
+  annotationToDelete: convertTimeToDatetime(annotation)
 });
 
 //since naming collisions are a pain I decided to combine the http method
@@ -52,7 +52,7 @@ export const removeAnnotation = (annotation) => ({
 
 export const postCreateAnnotation = (annotation) => (dispatch) => {
   postAnnotation(annotation)
-    .then(anno => dispatch(addAnnotation(annotation)))
+    .then(anno => dispatch(addAnnotation(anno.data)))
     .catch(err => console.log(err))
 }
 
