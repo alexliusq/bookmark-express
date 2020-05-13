@@ -10,7 +10,7 @@ const App = () => (
     <Switch>
       <Route exact path="/" component={MainPage} />
       <Route path="/annotations/bookID/:bookID" component={Annotations} />
-      <Route path="/annotations/create" component={AnnotationTest}/>
+      <Route path="/annotations/temp" component={AnnotationTest}/>
     </Switch>
 );
 

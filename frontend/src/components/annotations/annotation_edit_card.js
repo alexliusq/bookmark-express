@@ -9,17 +9,13 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
+import useInput from '../useInput';
 
 import EditIcon from '@material-ui/icons/Edit';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // '& .MuiTextField-root': {
-    //   margin: theme.spacing(1),
-    // }
-  },
   bullet: {
     display: 'inline-block',
     margin: '0 8px',
@@ -51,70 +47,72 @@ function getFormattedLocation(annotation) {
   return null;
 }
 
-function AnnotationNote(props) {
+function EditCardActions(props) {
   const classes = useStyles();
   return (
-    <React.Fragment>
-      <Typography variant="subtitle1" className={classes.noteTitle} >
-        Note
-      </Typography>
-      <Typography variant="body2" component="p">
-        {props.note}
-      </Typography>
-    </React.Fragment>
+  <CardActions className={classes.cardActions}>
+    <Button size="small" variant="contained">
+      Save
+    </Button>
+    <Button size="small" variant="text">
+      Cancel
+    </Button>
+    <Button size="small" variant="text" >
+      Delete
+    </Button>
+  </CardActions>
   )
 }
 
+function handleSave(event) {
+  event.preventDefault();
+}
 
-export default function AnnotationCreateCard(props) {
+export default function AnnotationEditCard(props) {
   const classes = useStyles();
   const annotation = props.annotation || {};
 
   const bull = <span className={classes.bullet}>•</span>;
 
+  // const { value:firstName, bind:bindFirstName, reset:resetFirstName } = useInput('');
+  
+  // const [highlight, setHighlight] = React.useState(annotation.highlight);
+  // const [note, setNote] = React.useState(annotation.note);
+
+
   return (
     <Card className={classes.root} variant="outlined">
       <CardHeader
         title="Editing Annotation"
-        action={
-        <CardActions className={classes.cardActions}>
-            <Button size="small" variant="contained">
-              Save
-            </Button>
-            <Button size="small" variant="text">
-              Cancel
-            </Button>
-            <Button size="small" variant="text" >
-              Delete
-            </Button>
-        </CardActions>
-        }
+        action={<EditCardActions />}
       />
       <CardContent>
-      <TextField
-          id="highlight"
-          label="Highlight"
-          multiline
-          fullWidth
-          rowsMax={10}
-          value={annotation.highlight}
-          variant="outlined"
-        />
-      <br />
-      <br />
-      <Divider variant="middle" light={true} />
-      <Typography variant="subtitle1" className={classes.noteTitle} >
-        Note
-      </Typography>
-      <TextField
-          id="note"
-          label="Note"
-          multiline
-          fullWidth
-          rowsMax={5}
-          value={annotation.note}
-          variant="outlined"
-        />
+        <TextField
+            id="highlight"
+            label="Highlight"
+            multiline
+            fullWidth
+            rowsMax={10}
+            value={annotation.highlight}
+            onChange={props.handleInputChange}
+            variant="outlined"
+          />
+        <br />
+        <br />
+        <Divider variant="middle" light={true} />
+        <Typography variant="subtitle1" className={classes.noteTitle} >
+          Note
+        </Typography>
+        <TextField
+            id="note"
+            label="Note"
+            multiline
+            fullWidth
+            rowsMax={5}
+            value={annotation.note}
+            onChange={props.handleInputChange}
+            variant="outlined"
+          />
       </CardContent>
     </Card>
   );

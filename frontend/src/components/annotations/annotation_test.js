@@ -7,7 +7,20 @@ import { fetchAnnotation, fetchAllAnnotations,
 import AnnotationCard from './annotation_card';
 import MainGridBox from '../main_presentation';
 import BookContainer from '../books/book_container';
-import AnnotationCreateCard from './annotation_create_card'
+import AnnotationEditCard from './annotation_edit_card';
+import AnnotationCardContainer from './annotation_container';
+
+const mapStateToProps = (state) => {
+  return {
+    // allAnnotations: state.annotations.allAnnotations
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    // fetchBookAnnotations: (bookID) => dispatch(fetchBookAnnotations(bookID)),
+  }
+}
 
 const tempAnnotation = {
   book_id: 49,
@@ -40,19 +53,7 @@ const tempAnnotation = {
   page: '86'
 }
 
-const mapStateToProps = (state) => {
-  return {
-    // allAnnotations: state.annotations.allAnnotations
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    // fetchBookAnnotations: (bookID) => dispatch(fetchBookAnnotations(bookID)),
-  }
-}
-
-class Annotations extends React.Component {
+class AnnotationTest extends React.Component {
   constructor(props) {
     super(props);
     // const {bookID} = this.props.match.params;
@@ -72,7 +73,7 @@ class Annotations extends React.Component {
           <Grid item>
             {/* <BookContainer bookID={this.state.bookID}/> */}
           </Grid>
-          <AnnotationCreateCard/>
+          <AnnotationCardContainer annotation={tempAnnotation} />
         </Grid>
       </MainGridBox>
   )
@@ -81,4 +82,4 @@ class Annotations extends React.Component {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps)(withRouter(Annotations));
+  mapDispatchToProps)(withRouter(AnnotationTest));
