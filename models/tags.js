@@ -29,7 +29,21 @@ async function removeTagFromAnnotation(annotation_id, tag) {
     RETURNING annotation_id, tag_id
   `);
 
+  await checkAndClearTagID(tagID);
+
   return rows[0];
+}
+
+async function checkAndClearTagID(tag_id) {
+  const {rows} = await db.query(SQL`
+    SELECT count(*) FROM annotations_tags WHERE tag_id = ${tag_id}
+  `);
+  const count = rows[0].count;
+  if(count > 0) return;
+
+  await db.query(SQL`
+    DELETE FROM tags WHERE id = ${tag_id}
+  `);
 }
 
 async function createTag(tag) {

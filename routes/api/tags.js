@@ -24,12 +24,12 @@ router.get('/', (req, res) => {
 });
 
 router.delete('/', (req, res) => {
-  const annotation_id = req.body.annotation_id || "";
+  const annotation_id = req.body.annotation_id + '' || "";
   const tag = req.body.tag || "";
   if (isEmpty(annotation_id) || isEmpty(tag)) {
     return res.status(400).json({'error': 'requires both valid annotation Id and tag'})
   }
-  removeTagFromAnnotation(annotation_id, tag)
+  Tags.removeTagFromAnnotation(annotation_id, tag)
     .then(annoTagIDs => res.json(annoTagIDs))
     .catch(err => res.json(err));
 })
