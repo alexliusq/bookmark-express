@@ -41,6 +41,16 @@ CREATE TABLE "kindle_annotations" (
   "edited" boolean DEFAULT false
 );
 
+CREATE TABLE "annotations_tags" (
+  "annotation_id" int NOT NULL,
+  "tag_id" int NOT NULL
+);
+
+CREATE TABLE "tags" (
+  "id" SERIAL PRIMARY KEY,
+  "tag" text
+);
+
 CREATE TABLE "calibre_authors" (
   "id" SERIAL PRIMARY KEY,
   "author" text UNIQUE,
@@ -75,4 +85,6 @@ ALTER TABLE "calibre_authors_books" ADD FOREIGN KEY ("author_id") REFERENCES "ca
 
 ALTER TABLE "calibre_authors_books" ADD FOREIGN KEY ("book_id") REFERENCES "calibre_metadata" ("id");
 
-ALTER TABLE "calibre_authors_books" ADD PRIMARY KEY ("author_id", "book_id"); 
+ALTER TABLE "calibre_authors_books" ADD PRIMARY KEY ("author_id", "book_id");
+
+ALTER TABLE "annotations_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE;
