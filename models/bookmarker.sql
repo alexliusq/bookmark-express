@@ -88,3 +88,5 @@ ALTER TABLE "calibre_authors_books" ADD FOREIGN KEY ("book_id") REFERENCES "cali
 ALTER TABLE "calibre_authors_books" ADD PRIMARY KEY ("author_id", "book_id");
 
 ALTER TABLE "annotations_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE;
+
+ALTER TABLE annotations_tags ADD CONSTRAINT annotation_id_tag_id_key UNIQUE(annotation_id, tag_id);      

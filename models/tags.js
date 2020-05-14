@@ -4,19 +4,18 @@ const SQL = require('sql-template-strings');
 
 
 async function addTagToAnnotation(annotation_id, tag) {
-  console.log(1);
+
   let tagID = await findTagID(tag);
-  console.log('hello');
   if (!tagID) {
     const newTag = await createTag(tag);
     tagID = newTag.id;
   }
-  console.log(2);
+
   const {rows} = await db.query(SQL`
     INSERT INTO annotations_tags (annotation_id, tag_id)
-    VALUES (${annotation_id}, ${tagID}) RETURNING annotation_id, tag_id
+    VALUES (${annotation_id}, ${tagID}) 
+    ON CONFLICT (annotation_id, tag_id) DO NOTHING
   `);
-  console.log(3);
   return rows[0];
 }
 
@@ -67,6 +66,10 @@ async function getAllTags() {
     SELECT id, tag FROM tags
   `);
   return rows;
+}
+
+async function getTagsForAnnotationID(annotation_id) {
+
 }
 
 module.exports = {
