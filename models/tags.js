@@ -14,10 +14,14 @@ async function addTagToAnnotation(annotation_id, tag) {
   const {rows} = await db.query(SQL`
     INSERT INTO annotations_tags (annotation_id, tag_id)
     VALUES (${annotation_id}, ${tagID}) 
-    ON CONFLICT (annotation_id, tag_id) DO NOTHING
+    ON CONFLICT (annotation_id, tag_id) DO UPDATE SET
+    annotation_id = EXCLUDED.annotation_id, tag_id = EXCLUDED.tag_id
+    RETURNING annotation_id, tag_id
   `);
+
   if (!rows[0]) return null;
-  return rows[0];
+
+  return {annotation_id, id:tagID, tag}
 }
 
 async function removeTagFromAnnotation(annotation_id, tag) {
@@ -30,8 +34,13 @@ async function removeTagFromAnnotation(annotation_id, tag) {
   `);
 
   await checkAndClearTagID(tagID);
-
-  return rows[0];
+  
+  if (!rows[0]) return null;
+  return {
+    annotation_id,
+    id: tag_id,
+    tag
+  };
 }
 
 async function checkAndClearTagID(tag_id) {

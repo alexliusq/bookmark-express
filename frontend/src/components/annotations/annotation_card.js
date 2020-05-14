@@ -9,9 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
-import LocalOfferRoundedIcon from '@material-ui/icons/LocalOfferRounded';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Chip from '@material-ui/core/Chip';
+import TagsAnnotationContainer from '../tags/tags_annotation_container';
+
 
 const useStyles = makeStyles({
   root: {
@@ -44,14 +43,6 @@ const useStyles = makeStyles({
   noteTitle: {
     marginTop: '0.5rem',
     color: 'rgba(0, 0, 0, 0.5)'
-  },
-  tags: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    flexWrap: 'wrap',
-    '& > *': {
-      "margin": '3px',
-    }
   }
 });
 
@@ -75,38 +66,6 @@ function AnnotationNote(props) {
       </Typography>
     </React.Fragment>
   )
-}
-
-function AnnotationTags(props) {
-  const classes = useStyles();
-  if (props.isEditingTags) {
-    return (
-    <Autocomplete
-      multiple
-      id="tags-filled"
-      // options={top100Films.map((option) => option.title)}
-      // defaultValue={[top100Films[13].title]}
-      renderOption={(option) => option.tag}
-      freeSolo
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField {...params} variant="filled" label="freeSolo" placeholder="Favorites" />
-      )}
-    />
-    )
-  } else {
-    return (
-      <div className={classes.tags}>
-        {props.tags.map(tag => (
-          <Chip variant="outlined" label={tag.tag} />
-        ))}
-      </div>
-    )
-  }
 }
 
 export default function AnnotationCard(props) {
@@ -133,13 +92,8 @@ export default function AnnotationCard(props) {
             <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
               Favorite
             </Button>
-            <Button size="small" variant="outlined" endIcon={<LocalOfferRoundedIcon />}>
-              Tag
-            </Button>
           </div>
-          <AnnotationTags
-            tags={annotation.tags}
-            isEditingTags={props.isEditingTags}/>
+          <TagsAnnotationContainer annotation={annotation}/>
         </CardActions>
         {annotation.note && <AnnotationNote note={annotation.note} />}
       </CardContent>
