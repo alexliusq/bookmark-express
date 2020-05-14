@@ -69,11 +69,24 @@ async function getAllTags() {
 }
 
 async function getTagsForAnnotationID(annotation_id) {
+  const {rows} = await db.query(SQL`
+    SELECT tags.id, tags.tag FROM annotations_tags
+    LEFT JOIN tags ON tags.id = annotations_tags.tag_id
+    WHERE annotation_id = ${annotation_id}
+  `);
 
+  return rows;
+}
+
+async function appendTagsToAnno(anno) {
+  const tags = await getTagsForAnnotationID(anno.id);
+  return {...anno, tags}
 }
 
 module.exports = {
   addTagToAnnotation,
   removeTagFromAnnotation,
-  getAllTags
+  getAllTags,
+  getTagsForAnnotationID,
+  appendTagsToAnno
 }
