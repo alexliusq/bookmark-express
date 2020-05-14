@@ -16,6 +16,7 @@ async function addTagToAnnotation(annotation_id, tag) {
     VALUES (${annotation_id}, ${tagID}) 
     ON CONFLICT (annotation_id, tag_id) DO NOTHING
   `);
+  if (!rows[0]) return null;
   return rows[0];
 }
 
