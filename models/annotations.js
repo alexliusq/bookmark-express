@@ -1,10 +1,13 @@
-let db = require('./db');
+const db = require('./db');
 const fs = require('fs').promises;
 const Books = require('./books');
 
 const SQL = require('sql-template-strings');
 const path = require('path');
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
+
+const multipleUsersEnabled = require('../config/multiple_users').enabled;
+
 
 const querySelectCols =  ` 
   id, book_id, bookline, title, author, language, begin, "end",
@@ -15,7 +18,13 @@ const annosSelectQuery = () => (
   SQL(['SELECT ' + querySelectCols + ' FROM kindle_annotations'])
 );
 
+// const annosUserFilter = (user_id) => {
+//   if (!multipleUsersEnabled) return '';
+//   return SQL` user_id = ${user_id}`;
+// }
+
 async function getAllAnnotations(limit = 50) {
+  //not multi user enabled for now.
   const query = annosSelectQuery()
     .append(SQL` LIMIT ${limit}`);
   console.log(query.sql);
@@ -29,17 +38,21 @@ async function getAnnotationsByBookTitle(title) {
   return rows;
 }
 
-async function getAnnotationsByBookID(book_id) {
+async function getAnnotationsByBookID(book_id, user_id) {
   const query = annosSelectQuery()
-    .append(SQL` WHERE book_id = ${book_id}`);
+    .append(SQL` WHERE book_id = ${book_id}`)
+  
+  if (multipleUsersEnabled) query.append(SQL` user_id = ${user_id}`);
 
   const {rows} = await db.query(query);
   return rows;
 }
 
-async function getAnnotationByID(annoID) {
+async function getAnnotationByID(annoID, user_id) {
   const query = annosSelectQuery()
     .append(SQL` WHERE id = ${annoID}`);
+
+  if (multipleUsersEnabled) query.append(SQL` user_id = ${user_id}`);
 
   const {rows} = await db.query(query);
 
@@ -75,7 +88,7 @@ async function getMatchingAnnotationID(book_id, end) {
   return rows[0].id;
 }
 
-async function addAnnotation(annotation) {
+async function addAnnotation(annotation, user_id) {
   const {
     ordernr, note, highlight, bookline, title, author, language, begin, end,
     time, statusline, page
@@ -116,10 +129,17 @@ async function addAnnotation(annotation) {
   query.append(' RETURNING ' + querySelectCols);
 
   const { rows } = await db.query(query);
+
+  if (multipleUsersEnabled) {
+    db.query(SQL`
+      UPDATE kindle_annotations SET user_id = ${user_id} WHERE id = ${rows[0].id}
+    `);
+  }
+
   return rows[0];
 }
 
-async function addCalibreAnnotation(calibreAnnotation) {
+async function addCalibreAnnotation(calibreAnnotation, user_id) {
   const {text, kind} = calibreAnnotation;
   const highlight = kind === 'highlight' ? text : null;
   const note = kind === 'note' ? text : null;
@@ -129,7 +149,7 @@ async function addCalibreAnnotation(calibreAnnotation) {
       ...calibreAnnotation,
       highlight,
       note
-    });
+    }, user_id);
   return row;
 }
 

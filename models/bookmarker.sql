@@ -1,11 +1,27 @@
 CREATE TABLE "books" (
   "id" SERIAL PRIMARY KEY,
   "title" text UNIQUE NOT NULL,
-  "completed_bool" bool NOT NULL,
   "isbn" text,
   "goodreads_details_id" int,
   "calibre_metadata_id" int
 );
+
+CREATE TABLE IF NOT EXISTS "users" (
+  "id" uuid PRIMARY KEY,
+  "email" text UNIQUE,
+  "password" text
+);
+
+CREATE TABLE IF NOT EXISTS "users_books" (
+  "user_id" uuid NOT NULL,
+  "book_id" id NOT NULL
+)
+
+CREATE INDEX users_email on users (email);
+
+ALTER TABLE "users_books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
+ALTER TABLE "users_books" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
+
 
 CREATE TABLE "goodreads_details" (
   "id" SERIAL PRIMARY KEY,
@@ -25,6 +41,7 @@ CREATE TABLE "goodreads_details" (
 
 CREATE TABLE "kindle_annotations" (
   "id" SERIAL PRIMARY KEY,
+  "user_id" uuid UNIQUE,
   "book_id" int,
   "bookline" text,
   "title" text,
@@ -48,7 +65,8 @@ CREATE TABLE "annotations_tags" (
 
 CREATE TABLE "tags" (
   "id" SERIAL PRIMARY KEY,
-  "tag" text UNIQUE NOT NULL
+  "user_id" uuid UNIQUE,
+  "tag" text NOT NULL
 );
 
 CREATE TABLE "calibre_authors" (
@@ -89,4 +107,4 @@ ALTER TABLE "calibre_authors_books" ADD PRIMARY KEY ("author_id", "book_id");
 
 ALTER TABLE "annotations_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE;
 
-ALTER TABLE annotations_tags ADD CONSTRAINT annotation_id_tag_id_key UNIQUE(annotation_id, tag_id);      
+ALTER TABLE "annotations_tags" ADD CONSTRAINT annotation_id_tag_id_key UNIQUE(annotation_id, tag_id);
