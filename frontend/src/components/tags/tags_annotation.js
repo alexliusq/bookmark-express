@@ -64,7 +64,7 @@ export default function TagsAnnotation(props) {
       }}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
-          <Chip variant="outlined" label={option.tag} {...getTagProps({ index })} />
+          <Chip variant="outlined" key={index} label={option.tag} {...getTagProps({ index })} />
         ))
       }
       renderInput={(params) => (
@@ -78,11 +78,10 @@ export default function TagsAnnotation(props) {
         {props.tags.map(tag => (
           <Chip variant="outlined" label={tag.tag} />
         ))}
-        <Button size="small" variant="outlined"
-          endIcon={<LocalOfferRoundedIcon />}
+        <Button size="small" variant="text"
           onClick={props.handleEditTags}
         >
-          Tag
+          {props.tags.length === 0 ? "Add Tags..." : "Edit Tags"}
         </Button>
       </div>
     )

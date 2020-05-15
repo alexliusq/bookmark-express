@@ -10,6 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import TagsAnnotationContainer from '../tags/tags_annotation_container';
+import CardHeader from '@material-ui/core/CardHeader';
 
 
 const useStyles = makeStyles({
@@ -31,7 +32,6 @@ const useStyles = makeStyles({
     "flex-wrap": "wrap"
   },
   editButtons: {
-    "margin-right": "auto",
     '& > *': {
       "margin": '3px',
     }
@@ -43,6 +43,21 @@ const useStyles = makeStyles({
   noteTitle: {
     marginTop: '0.5rem',
     color: 'rgba(0, 0, 0, 0.5)'
+  },
+  annotationHeader: {
+    // 'margin-bottom': "12px",
+    "display": "flex",
+    "justify-content": "space-between",
+    "align-items": "center",
+    "padding-bottom": 0
+  },
+  centeredHeader: {
+    "display": "flex",
+    "flex-direction": "column",
+    "justify-content": "center"
+  },
+  divider: {
+    "margin-top": 6
   }
 });
 
@@ -57,8 +72,8 @@ function AnnotationNote(props) {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <Divider variant="middle" light={true} />
-      <Typography variant="subtitle1" className={classes.noteTitle} >
+      <Divider variant="middle" light={true} className={classes.divider}/>
+      <Typography variant="subtitle1" className={classes.noteTitle}>
         Note
       </Typography>
       <Typography variant="body2" component="p">
@@ -71,30 +86,29 @@ function AnnotationNote(props) {
 export default function AnnotationCard(props) {
   const classes = useStyles();
   const annotation = props.annotation;
-
   const bull = <span className={classes.bullet}>•</span>;
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardContent>
-        <Typography className={classes.pos} color="textSecondary">
-  {getFormattedLocation(annotation)}{bull}{dateFormat(annotation.time, "ddd, mm/dd/yy HH:MM")} 
+      <CardContent className={classes.annotationHeader}>
+        <Typography variant="subtitle1" >
+        {getFormattedLocation(props.annotation)}{bull}{dateFormat(props.annotation.time, "ddd, mm/dd/yy HH:MM")}
         </Typography>
+        <div className={classes.editButtons}>
+          <Button size="small" variant="outlined" endIcon={<EditIcon />}
+            onClick={props.handleEdit}>
+            Edit
+          </Button>
+          <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
+            Favorite
+          </Button>
+        </div>
+      </CardContent>
+      <CardContent>
         <Typography className={classes.quote} gutterBottom={true}>
          {annotation.highlight}
         </Typography>
-        <CardActions className={classes.cardActions}>
-          <div className={classes.editButtons}>
-            <Button size="small" variant="outlined" endIcon={<EditIcon />}
-              onClick={props.handleEdit}>
-              Edit
-            </Button>
-            <Button size="small" variant="outlined" endIcon={<FavoriteBorderIcon />}>
-              Favorite
-            </Button>
-          </div>
-          <TagsAnnotationContainer annotation={annotation}/>
-        </CardActions>
+        <TagsAnnotationContainer annotation={annotation}/>
         {annotation.note && <AnnotationNote note={annotation.note} />}
       </CardContent>
     </Card>

@@ -22,6 +22,7 @@ class TagsAnnotationContainer extends React.Component {
     this.handlePostTagToAnnotation = this.handlePostTagToAnnotation.bind(this);
     this.handleUpdateExistingTags = this.handleUpdateExistingTags.bind(this);
     this.handleAutoCompleteOnBlur = this.handleAutoCompleteOnBlur.bind(this);
+    this.handleDeleteTagFromAnnotation = this.handleDeleteTagFromAnnotation.bind(this);
   }
 
   handleEditTags(event) {
@@ -30,7 +31,6 @@ class TagsAnnotationContainer extends React.Component {
     });
     this.handleUpdateExistingTags();
   }
-
 
   handleAutoCompleteOnBlur() {
     this.setState({
@@ -54,15 +54,15 @@ class TagsAnnotationContainer extends React.Component {
     }).then(res => {
       const annoTag = res.data;
       const createdOption = {id: annoTag.id, tag: annoTag.tag};
-      console.log('createdOption', createdOption);
-      console.log('current state', this.state.tags);
-      console.log('current existing tags', this.state.existingTags);
+      // console.log('createdOption', createdOption);
+      // console.log('current state', this.state.tags);
+      // console.log('current existing tags', this.state.existingTags);
       const newTagsState = this.state.tags
         .map(option => option.tag === createdOption.tag ? createdOption : option);
       const newExistingTagsState = this.state.existingTags
         .map(option => option.tag === createdOption.tag ? createdOption : option);
-      console.log('newTagsState', newTagsState);
-      console.log('newExistingTagState', newExistingTagsState);
+      // console.log('newTagsState', newTagsState);
+      // console.log('newExistingTagState', newExistingTagsState);
       this.setState({
         tags: newTagsState,
         existingTags: newExistingTagsState
