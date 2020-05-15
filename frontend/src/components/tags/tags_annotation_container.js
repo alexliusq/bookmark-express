@@ -21,6 +21,7 @@ class TagsAnnotationContainer extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handlePostTagToAnnotation = this.handlePostTagToAnnotation.bind(this);
     this.handleUpdateExistingTags = this.handleUpdateExistingTags.bind(this);
+    this.handleAutoCompleteOnBlur = this.handleAutoCompleteOnBlur.bind(this);
   }
 
   handleEditTags(event) {
@@ -28,6 +29,13 @@ class TagsAnnotationContainer extends React.Component {
       isEditingTags: true
     });
     this.handleUpdateExistingTags();
+  }
+
+
+  handleAutoCompleteOnBlur() {
+    this.setState({
+      isEditingTags: false
+    })
   }
 
   handleUpdateExistingTags() {
@@ -63,11 +71,6 @@ class TagsAnnotationContainer extends React.Component {
   }
 
   handleDeleteTagFromAnnotation(deletedOption) {
-    // console.log(deletedOption);
-    // console.log({
-    //   "annotation_id" : this.state.annotation_id,
-    //   "tag": deletedOption.tag
-    // });
     deleteTagFromAnnotation({
       "annotation_id" : this.state.annotation_id,
       "tag": deletedOption.tag
@@ -114,6 +117,7 @@ class TagsAnnotationContainer extends React.Component {
         existingTags={this.state.existingTags}
         handleEditTags={this.handleEditTags}
         handleOnChange={this.handleOnChange}
+        handleAutoCompleteOnBlur={this.handleAutoCompleteOnBlur}
       />
     )
   }
