@@ -19,12 +19,18 @@ class TagsAnnotationContainer extends React.Component {
     }
     this.handleEditTags = this.handleEditTags.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handlePostTagToAnnotation = this.handlePostTagToAnnotation.bind(this);
+    this.handleUpdateExistingTags = this.handleUpdateExistingTags.bind(this);
   }
 
   handleEditTags(event) {
     this.setState({
       isEditingTags: true
     });
+    this.handleUpdateExistingTags();
+  }
+
+  handleUpdateExistingTags() {
     getAllTags().then(tags => {
       console.log(tags);
       this.setState({
@@ -33,16 +39,65 @@ class TagsAnnotationContainer extends React.Component {
     })
   }
 
+  handlePostTagToAnnotation(newOption) {
+    postTagToAnnotation({
+      "annotation_id" : this.state.annotation_id,
+      "tag": newOption.tag
+    }).then(res => {
+      const annoTag = res.data;
+      const createdOption = {id: annoTag.id, tag: annoTag.tag};
+      console.log('createdOption', createdOption);
+      console.log('current state', this.state.tags);
+      console.log('current existing tags', this.state.existingTags);
+      const newTagsState = this.state.tags
+        .map(option => option.tag === createdOption.tag ? createdOption : option);
+      const newExistingTagsState = this.state.existingTags
+        .map(option => option.tag === createdOption.tag ? createdOption : option);
+      console.log('newTagsState', newTagsState);
+      console.log('newExistingTagState', newExistingTagsState);
+      this.setState({
+        tags: newTagsState,
+        existingTags: newExistingTagsState
+      })
+    }).catch(err => console.log(err));
+  }
+
+  handleDeleteTagFromAnnotation(deletedOption) {
+    // console.log(deletedOption);
+    // console.log({
+    //   "annotation_id" : this.state.annotation_id,
+    //   "tag": deletedOption.tag
+    // });
+    deleteTagFromAnnotation({
+      "annotation_id" : this.state.annotation_id,
+      "tag": deletedOption.tag
+    }).then(annoTag => {
+      this.handleUpdateExistingTags()
+    }).catch(err => console.log(err));
+  }
+
   handleOnChange(event, newValue) {
-    console.log(newValue);
-    let newExisting = [...this.state.existingTags, ...newValue];
+    const newOptions = newValue.filter(newOption => {
+      return this.state.tags.filter(option => option.tag === newOption.tag).length === 0
+    });
+
+    const deletedOptions = this.state.tags.filter(option => {
+      return newValue.filter(newOption => option.tag === newOption.tag).length === 0;
+    });
+
+    console.log('new items', newOptions);
+    console.log('deleted items', deletedOptions);
+
+    const newExisting = [...this.state.existingTags, ...newOptions];
     this.setState({
       tags: newValue,
       existingTags: newExisting
     });
+
+    newOptions.forEach(newOption => this.handlePostTagToAnnotation(newOption));
+    deletedOptions.forEach(deletedOption => this.handleDeleteTagFromAnnotation(deletedOption));
   }
 
-  handleDelete
 
   handleAddTag(event) {
     event.preventDefault();

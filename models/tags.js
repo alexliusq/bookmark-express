@@ -33,12 +33,12 @@ async function removeTagFromAnnotation(annotation_id, tag) {
     RETURNING annotation_id, tag_id
   `);
 
-  await checkAndClearTagID(tagID);
+  checkAndClearTagID(tagID);
   
   if (!rows[0]) return null;
   return {
     annotation_id,
-    id: tag_id,
+    id: tagID,
     tag
   };
 }

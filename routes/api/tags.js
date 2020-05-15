@@ -26,6 +26,8 @@ router.get('/', (req, res) => {
 router.delete('/', (req, res) => {
   const annotation_id = req.body.annotation_id + '' || "";
   const tag = req.body.tag || "";
+  console.log('hello');
+  console.log(annotation_id, tag);
   if (isEmpty(annotation_id) || isEmpty(tag)) {
     return res.status(400).json({'error': 'requires both valid annotation Id and tag'})
   }
