@@ -30,6 +30,7 @@ export default function TagsAnnotation(props) {
   if (props.isEditingTags) {
     return (
     <Autocomplete
+      
       className = {classes.tagsAutocomplete}
       multiple
       selectOnFocus
@@ -37,9 +38,13 @@ export default function TagsAnnotation(props) {
       filterOptions={(options, params) => {
         let filtered = filter(options, params);
         // console.log("before", filtered);
+
+        // this code causes material to throw an error that none of the current values
+        // match options. going to try and use getOptionSelected instead
         filtered = filtered.filter(option => {
           return props.tags.filter(tag => tag.tag === option.tag).length === 0;
         });
+
         // console.log('after', filtered);
         // Suggest the creation of a new value
         if (params.inputValue !== '') {

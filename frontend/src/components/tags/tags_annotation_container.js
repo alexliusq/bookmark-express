@@ -88,7 +88,10 @@ class TagsAnnotationContainer extends React.Component {
     console.log('new items', newOptions);
     console.log('deleted items', deletedOptions);
 
-    const newExisting = [...this.state.existingTags, ...newOptions];
+    let newExisting = [...this.state.existingTags, ...newOptions];
+    newExisting = newExisting.filter(option => {
+      return deletedOptions.filter(toDelete => option.tag === toDelete.tag).length === 0;
+    })
     this.setState({
       tags: newValue,
       existingTags: newExisting
