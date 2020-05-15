@@ -41,9 +41,9 @@ export default function TagsAnnotation(props) {
 
         // this code causes material to throw an error that none of the current values
         // match options. going to try and use getOptionSelected instead
-        filtered = filtered.filter(option => {
-          return props.tags.filter(tag => tag.tag === option.tag).length === 0;
-        });
+        // filtered = filtered.filter(option => {
+        //   return props.tags.filter(tag => tag.tag === option.tag).length === 0;
+        // });
 
         // console.log('after', filtered);
         // Suggest the creation of a new value
@@ -56,6 +56,8 @@ export default function TagsAnnotation(props) {
         
         return filtered;
       }}
+      getOptionSelected={(option, value) => option.tag === value.tag}
+      filterSelectedOptions
       options={props.existingTags}
       value={props.tags}
       onChange={props.handleOnChange}
