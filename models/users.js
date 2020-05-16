@@ -25,7 +25,7 @@ module.exports = {
   },
   async find(email) {
     const {rows} = await db.query(SQL`
-    SELECT * FROM users WHERE email=${email} LIMIT 1;
+    SELECT id, email FROM users WHERE email=${email} LIMIT 1;
     `);
     return rows[0];
   }
