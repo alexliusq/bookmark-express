@@ -10,6 +10,8 @@ const books = require('./routes/api/books');
 const annotations = require('./routes/api/annotations');
 const tags = require('./routes/api/tags');
 const users = require('./routes/api/users');
+const bodyParser = require('body-parser');
+
 
 const passport = require('passport');
 
@@ -19,8 +21,9 @@ const bookManager = require('./models/books');
 app.use(passport.initialize());
 require('./config/passport')(passport);
 
+app.use(express.urlencoded({ extended: false}));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+
 
 app.use('/api/books', books);
 app.use('/api/annotations', annotations);

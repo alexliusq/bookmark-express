@@ -3,12 +3,13 @@ const User = require('../../models/users');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const passport = require('passport');
+const bcrypt = require('bcrypt');
 
 const router = new Router();
 
-router.get('/test', 
-  passport.authenticate('jwt', {session: false}),
+router.get('/test', passport.authenticate('jwt', {session: false}),
   (req, res) => {
+    console.log('yello');
     res.json({
       user: req.user
     })
@@ -45,22 +46,27 @@ router.post('/login', async (req, res) => {
       errors: "User associated with email does not exist"
     })
   }
-
-  if (!(await bcrypt.compare(password, user.password))) {
+  const passwordMatches = await bcrypt.compare(password, user.password);
+  if (!passwordMatches) {
     return res.status(403).json({
       errors: "Wrong password"
     })
   }
 
-  const token = jwt.sign(
-    {user},
-    keys.secretOrKey,
-    {expiresIn: "7d"}
-  );
+  let userInfo = {
+    id: user.id,
+    email: user.email
+  }
 
+  const token = jwt.sign(
+    {user: userInfo},
+    keys.secretOrKey,
+    {expiresIn: '7d'}
+  );
+  
   res.json({
     success: true,
-    token: 'bearer ' + token
+    token: 'Bearer ' + token
   });
 })
 
