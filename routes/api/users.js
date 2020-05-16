@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
 
     const user = await User.create(email, password);
     if (!user) {
-      return res.status(400).json(error: "User already exists");
+      return res.status(400).json({error: "User already exists"});
     }
 
     return res.status(200).json(user);
@@ -60,6 +60,8 @@ router.post('/login', async (req, res) => {
 
   res.json({
     success: true,
-    token: 'Bearer ' + token
+    token: 'bearer ' + token
   });
 })
+
+module.exports = router;
