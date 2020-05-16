@@ -42,7 +42,7 @@ async function getAnnotationsByBookID(book_id, user_id) {
   const query = annosSelectQuery()
     .append(SQL` WHERE book_id = ${book_id}`)
   
-  if (multipleUsersEnabled) query.append(SQL` user_id = ${user_id}`);
+  if (multipleUsersEnabled) query.append(SQL` AND user_id = ${user_id}`);
 
   const {rows} = await db.query(query);
   return rows;
@@ -52,7 +52,7 @@ async function getAnnotationByID(annoID, user_id) {
   const query = annosSelectQuery()
     .append(SQL` WHERE id = ${annoID}`);
 
-  if (multipleUsersEnabled) query.append(SQL` user_id = ${user_id}`);
+  if (multipleUsersEnabled) query.append(SQL` AND user_id = ${user_id}`);
 
   const {rows} = await db.query(query);
 
@@ -131,7 +131,7 @@ async function addAnnotation(annotation, user_id) {
   const { rows } = await db.query(query);
 
   if (multipleUsersEnabled) {
-    db.query(SQL`
+    await db.query(SQL`
       UPDATE kindle_annotations SET user_id = ${user_id} WHERE id = ${rows[0].id}
     `);
   }
@@ -185,7 +185,6 @@ async function deleteAnnotation(annotation) {
 
   return rows[0];
 }
-
 
 module.exports = {
   addCalibreAnnotation,
