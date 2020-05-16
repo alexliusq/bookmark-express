@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "express-paginate": "^1.0.0",
     "goodreads-api-node": "0.0.10",
+    "passport-jwt": "^4.0.0",
     "pg": "^8.1.0",
     "sql-template-strings": "^2.2.2",
     "validator": "^13.0.0"

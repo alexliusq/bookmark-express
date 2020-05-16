@@ -25,7 +25,7 @@ async function addTagToAnnotation(annotation_id, tag, user_id) {
 }
 
 async function removeTagFromAnnotation(annotation_id, tag, user_id) {
-  const tagID = await findTagID(tag);
+  const tagID = await findTagID(tag, user_id);
 
   const {rows} = await db.query(SQL`
     DELETE FROM annotations_tags
@@ -51,7 +51,7 @@ async function checkAndClearTagID(tag_id, user_id) {
     query.append(SQL` AND user_id = ${user_id}`)
   }
 
-  const {rows} = await db.query();
+  const {rows} = await db.query(query);
   const count = rows[0].count;
   if(count > 0) return;
 

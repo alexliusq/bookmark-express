@@ -37,8 +37,9 @@ const useStyles = makeStyles({
     }
   },
   quote: {
-    "font-family": "'Noto Serif', serif",
-    "line-height": 1.3
+    "font-family": "Georgia, serif",
+    "line-height": 1.3,
+    color: 'rgba(0, 0, 0, 1)'
   },
   noteTitle: {
     marginTop: '0.5rem',

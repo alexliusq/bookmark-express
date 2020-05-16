@@ -7,15 +7,15 @@ CREATE TABLE "books" (
 );
 
 CREATE TABLE IF NOT EXISTS "users" (
-  "id" uuid PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "email" text UNIQUE,
   "password" text
 );
 
 CREATE TABLE IF NOT EXISTS "users_books" (
-  "user_id" uuid NOT NULL,
-  "book_id" id NOT NULL
-)
+  "user_id" int NOT NULL,
+  "book_id" int NOT NULL
+);
 
 CREATE INDEX users_email on users (email);
 
@@ -41,7 +41,7 @@ CREATE TABLE "goodreads_details" (
 
 CREATE TABLE "kindle_annotations" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" uuid UNIQUE,
+  "user_id" int UNIQUE,
   "book_id" int,
   "bookline" text,
   "title" text,
@@ -65,7 +65,7 @@ CREATE TABLE "annotations_tags" (
 
 CREATE TABLE "tags" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" uuid UNIQUE,
+  "user_id" int UNIQUE,
   "tag" text NOT NULL
 );
 
