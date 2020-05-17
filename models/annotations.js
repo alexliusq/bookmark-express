@@ -23,11 +23,13 @@ const annosSelectQuery = () => (
 //   return SQL` user_id = ${user_id}`;
 // }
 
-async function getAllAnnotations(limit = 50) {
+async function getAllAnnotations(limit = 50, user_id) {
   //not multi user enabled for now.
-  const query = annosSelectQuery()
-    .append(SQL` LIMIT ${limit}`);
-  console.log(query.sql);
+  const query = annosSelectQuery();
+
+  if (multipleUsersEnabled) query.append(SQL ` WHERE user_id = ${user_id}`);
+
+  query.append(SQL` LIMIT ${limit}`);
   const {rows} = await db.query(query);
   return rows;
 }
@@ -39,6 +41,7 @@ async function getAnnotationsByBookTitle(title) {
 }
 
 async function getAnnotationsByBookID(book_id, user_id) {
+  console.log(book_id, user_id);
   const query = annosSelectQuery()
     .append(SQL` WHERE book_id = ${book_id}`)
   

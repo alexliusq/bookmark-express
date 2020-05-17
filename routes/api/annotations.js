@@ -6,10 +6,14 @@ const Annotations = require('../../models/annotations');
 const Tags = require('../../models/tags');
 // const { validateBookDetails } = require('../../validation/books');
 
+function getUserID(req) {
+  return req.user && req.user.id;
+}
+
 
 router.get('/', async (req, res) => {
   try {
-    const annos = await Annotations.getAllAnnotations();
+    const annos = await Annotations.getAllAnnotations(10000, getUserID(req));
     const response = await Promise.all(annos.map(Tags.appendTagsToAnno));
     
     res.json(response);
@@ -20,7 +24,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const anno = await Annotations.getAnnotationByID(req.params.id);
+    const anno = await Annotations.getAnnotationByID(req.params.id, getUserID(req));
     const response = await Tags.appendTagsToAnno(anno);
     res.json(response);
   } catch(err) {
@@ -30,7 +34,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/bookID/:id', async (req, res) => {
   try {
-    const annos = await Annotations.getAnnotationsByBookID(req.params.id);
+    const annos = await Annotations.getAnnotationsByBookID(req.params.id, getUserID(req));
     const response = await Promise.all(annos.map(Tags.appendTagsToAnno));
     
     res.json(response); 
@@ -50,7 +54,7 @@ router.put('/', async (req, res) => {
   }
 
   try {
-    const anno = await Annotations.editAnnotation(req.body);
+    const anno = await Annotations.editAnnotation(req.body, getUserID(req));
     const response = await Tags.appendTagsToAnno(anno);
     res.json(response);
   } catch(err) {
@@ -77,7 +81,7 @@ router.post('/', (req, res) => {
     return res.status(400).json(errors);
   }
 
-  Annotations.addAnnotation(req.body)
+  Annotations.addAnnotation(req.body, getUserID(user))
     .then(anno => res.json(anno))
     .catch(err => {
       res.status(404).json(err);
@@ -88,7 +92,7 @@ router.post('/calibre', (req, res) => {
   const anno = req.body;
   if (!anno.kind) return res.status(404).json({'kind': 'Annotation needs kind'});
   if (!anno.text) return res.status(404).json({'text': 'Annotation needs text'});
-  Annotations.addCalibreAnnotation(anno)
+  Annotations.addCalibreAnnotation(anno, getUserID(req))
     .then(anno => res.json(anno))
     .catch(err => {
       res.status(404).json(err);
