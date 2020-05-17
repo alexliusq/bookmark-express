@@ -10,10 +10,9 @@ const books = require('./routes/api/books');
 const annotations = require('./routes/api/annotations');
 const tags = require('./routes/api/tags');
 const users = require('./routes/api/users');
-const bodyParser = require('body-parser');
-
 
 const passport = require('passport');
+const multipleUsersEnabled = require('./config/multiple_users').enabled;
 
 const bookManager = require('./models/books');
 // const { tempBookData } = require('./tempBookData');

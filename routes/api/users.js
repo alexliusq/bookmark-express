@@ -6,8 +6,9 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 
 const router = new Router();
+const authenticateMiddleware = require('../../middleware/authentication');
 
-router.get('/test', passport.authenticate('jwt', {session: false}),
+router.get('/test', authenticateMiddleware,
   (req, res) => {
     console.log('yello');
     res.json({

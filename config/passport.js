@@ -13,7 +13,6 @@ options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 // }
 options.secretOrKey = keys.secretOrKey; 
 
-console.log('dkddkdk', options);
 module.exports = (passport) => {
   passport.use(new JwtStrategy(options, async (jwt_payload, done) => {
     try {
