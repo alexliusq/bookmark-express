@@ -1,34 +1,36 @@
-const goodReadsKey = require('./config/keys').goodReadsKey;
-const goodreads = require('goodreads-api-node');
-const grClient = goodreads(goodReadsKey);
 const express = require('express');
+const passport = require('passport');
+
+// const goodreads = require('goodreads-api-node');
+// const { goodReadsKey } = require('./config/keys');
+// const grClient = goodreads(goodReadsKey);
+
 const app = express();
 const books = require('./routes/api/books');
 const annotations = require('./routes/api/annotations');
 const tags = require('./routes/api/tags');
 const users = require('./routes/api/users');
 
-const passport = require('passport');
 
 const authenticationMiddleware = require('./middleware/authentication');
 
-const bookManager = require('./models/books');
+// const bookManager = require('./models/books');
 // const { tempBookData } = require('./tempBookData');
 
 app.use(passport.initialize());
 require('./config/passport')(passport);
 
-app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
 app.use('/api/books', books);
 app.use('/api/annotations', authenticationMiddleware, annotations);
 app.use('/api/tags', authenticationMiddleware, tags);
-app.use('/api/users', users)
+app.use('/api/users', users);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get('/', (req, res) => {
+  res.send('Hello World!');
 });
 
 
