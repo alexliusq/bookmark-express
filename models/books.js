@@ -12,49 +12,20 @@ pg.query('SELECT author FROM books WHERE name = $1 AND author = $2', [book, auth
 pg.query(SQL`SELECT author FROM books WHERE name = ${book} AND author = ${author}`)
 */
 
-/*
-async create(email, password) {
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
+// async function initializeBooksDB() {
+//   const queryString = await fs.readFile(tempDataFile, 'utf-8');
+//   // console.log('boo');
+//   const res = await db.query(queryString);
+//   console.log(res);
+// }
 
-      const {rows} = await db.query(sql`
-      INSERT INTO users (id, email, password)
-        VALUES (${uuidv4()}, ${email}, ${hashedPassword})
-        RETURNING id, email;
-      `);
-
-      const [user] = rows;
-      return user;
-    } catch (error) {
-      if (error.constraint === 'users_email_key') {
-        return null;
-      }
-
-      throw error;
-    }
-  },
-  async find(email) {
-    const {rows} = await db.query(sql`
-    SELECT * FROM users WHERE email=${email} LIMIT 1;
-    `);
-    return rows[0];
-  }
-*/
-
-async function initializeBooksDB() {
-  const queryString = await fs.readFile(tempDataFile, 'utf-8');
-  // console.log('boo');
-  const res = await db.query(queryString);
-  console.log(res);
-}
-
-async function dropBooksDB() {
-  const query = `DROP TABLE books, goodreads_details, kindle_annotations,
-  calibre_authors, calibre_authors_books, calibre_metadata
-  `;
-  const res = await db.query(query);
-  console.log(res);
-}
+// async function dropBooksDB() {
+//   const query = `DROP TABLE books, goodreads_details, kindle_annotations,
+//   calibre_authors, calibre_authors_books, calibre_metadata
+//   `;
+//   const res = await db.query(query);
+//   console.log(res);
+// }
 
 
 async function createBookWithCalibre(calibreMetaData) {
@@ -81,63 +52,30 @@ async function createBookWithCalibre(calibreMetaData) {
 }
 
 async function insertBook(title, isbn) {
-  try {
-    const { rows } = await db.query(SQL`
-    INSERT INTO books
-      (title, completed_bool, isbn)
-    VALUES
-      (${title}, false, ${isbn})
-    ON CONFLICT (title)
-    DO UPDATE SET title = EXCLUDED.title
-    RETURNING id;
-    `);
-    return rows[0].id;
-  } catch (err) {
-    throw (err);
-  }
+  const { rows } = await db.query(SQL`
+  INSERT INTO books
+    (title, completed_bool, isbn)
+  VALUES
+    (${title}, false, ${isbn})
+  ON CONFLICT (title)
+  DO UPDATE SET title = EXCLUDED.title
+  RETURNING id;
+  `);
+  return rows[0].id;
 }
 
 async function insertCalibreAuthor(author, author_sort) {
-  try {
-    const { rows } = await db.query(SQL`
-    INSERT INTO calibre_authors
-      (author, author_sort)
-    VALUES
-      (${author}, ${author_sort})
-    ON CONFLICT (author)
-    DO UPDATE SET author = EXCLUDED.author
-    RETURNING id;
-    `);
-    return rows[0].id;
-  } catch (err) {
-    throw err;
-  }
+  const { rows } = await db.query(SQL`
+  INSERT INTO calibre_authors
+    (author, author_sort)
+  VALUES
+    (${author}, ${author_sort})
+  ON CONFLICT (author)
+  DO UPDATE SET author = EXCLUDED.author
+  RETURNING id;
+  `);
+  return rows[0].id;
 }
-
-/* error object
-err: error: duplicate key value violates unique constraint "calibre_authors_author_key" at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48) at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19) at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22) at Socket.emit (events.js:200:13) at addChunk (_stream_readable.js:294:12) at readableAddChunk (_stream_readable.js:275:11) at Socket.Readable.push (_stream_readable.js:210:10) at TCP.onStreamRead (internal/stream_base_commons.js:166:17)
-code: "23505"
-column: undefined
-constraint: "calibre_authors_author_key"
-dataType: undefined
-detail: "Key (author)=(Stephen King) already exists."
-file: "nbtinsert.c"
-hint: undefined
-internalPosition: undefined
-internalQuery: undefined
-length: 237
-line: "570"
-name: "error"
-position: undefined
-routine: "_bt_check_unique"
-schema: "public"
-severity: "ERROR"
-table: "calibre_authors"
-where: undefined
-message: "duplicate key value violates unique constraint "calibre_authors_author_key""
-stack: "error: duplicate key value violates unique constraint "calibre_authors_author_key"↵    at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48)↵    at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19)↵    at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22)↵    at Socket.emit (events.js:200:13)↵    at addChunk (_stream_readable.js:294:12)↵    at readableAddChunk (_stream_readable.js:275:11)↵    at Socket.Readable.push (_stream_readable.js:210:10)↵    at TCP.onStreamRead (internal/stream_base_commons.js:166:17)"
-__proto__: Object
-*/
 
 async function insertCalibreMetadata(calibreMetaData) {
   let {
@@ -149,38 +87,30 @@ async function insertCalibreMetadata(calibreMetaData) {
 
   const { isbn, amazon } = identifiers;
 
-  try {
-    const { rows } = await db.query(SQL`
-    INSERT INTO calibre_metadata
-      (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
-    VALUES
-      (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
-        ${title_sort}, ${comments}, ${cover})
-    ON CONFLICT (isbn)
-    DO UPDATE SET isbn = EXCLUDED.isbn
-    RETURNING id;
-    `);
+  const { rows } = await db.query(SQL`
+  INSERT INTO calibre_metadata
+    (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
+  VALUES
+    (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
+      ${title_sort}, ${comments}, ${cover})
+  ON CONFLICT (isbn)
+  DO UPDATE SET isbn = EXCLUDED.isbn
+  RETURNING id;
+  `);
 
-    return rows[0].id;
-  } catch (err) {
-    throw (err);
-  }
+  return rows[0].id;
 }
 
 
 async function insertAuthorIDBookID(authorID, bookID) {
-  try {
-    const { rows } = await db.query(SQL`
-    INSERT INTO calibre_authors_books (author_id, book_id)
-    VALUES (${authorID}, ${bookID})
-    ON CONFLICT (author_id, book_id)
-    DO UPDATE SET book_id = EXCLUDED.book_id
-    RETURNING author_id, book_id;
-    `);
-    return rows[0].id;
-  } catch (err) {
-    throw (err);
-  }
+  const { rows } = await db.query(SQL`
+  INSERT INTO calibre_authors_books (author_id, book_id)
+  VALUES (${authorID}, ${bookID})
+  ON CONFLICT (author_id, book_id)
+  DO UPDATE SET book_id = EXCLUDED.book_id
+  RETURNING author_id, book_id;
+  `);
+  return rows[0].id;
 }
 
 async function linkBookToAuthor(isbn, author) {
@@ -309,3 +239,28 @@ module.exports = {
   getBookID,
   insertBook,
 };
+
+/* error object
+err: error: duplicate key value violates unique constraint "calibre_authors_author_key" at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48) at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19) at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22) at Socket.emit (events.js:200:13) at addChunk (_stream_readable.js:294:12) at readableAddChunk (_stream_readable.js:275:11) at Socket.Readable.push (_stream_readable.js:210:10) at TCP.onStreamRead (internal/stream_base_commons.js:166:17)
+code: "23505"
+column: undefined
+constraint: "calibre_authors_author_key"
+dataType: undefined
+detail: "Key (author)=(Stephen King) already exists."
+file: "nbtinsert.c"
+hint: undefined
+internalPosition: undefined
+internalQuery: undefined
+length: 237
+line: "570"
+name: "error"
+position: undefined
+routine: "_bt_check_unique"
+schema: "public"
+severity: "ERROR"
+table: "calibre_authors"
+where: undefined
+message: "duplicate key value violates unique constraint "calibre_authors_author_key""
+stack: "error: duplicate key value violates unique constraint "calibre_authors_author_key"↵    at Connection.parseE (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:600:48)↵    at Connection.parseMessage (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:399:19)↵    at Socket.<anonymous> (/Users/Alex/projects/bookmarker-express/node_modules/pg/lib/connection.js:115:22)↵    at Socket.emit (events.js:200:13)↵    at addChunk (_stream_readable.js:294:12)↵    at readableAddChunk (_stream_readable.js:275:11)↵    at Socket.Readable.push (_stream_readable.js:210:10)↵    at TCP.onStreamRead (internal/stream_base_commons.js:166:17)"
+__proto__: Object
+*/

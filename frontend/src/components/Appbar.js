@@ -13,6 +13,10 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ListItemLink from './shared/list_item_link';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ButtonLink from './shared/button_link';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -99,7 +103,7 @@ function AccountButton(props) {
   }
 }
 
-function MainAppBar() {
+function MainAppBar(props) {
   const classes = useStyles();
 
   // const [anchorEl, setAnchorEl] = React.useState(null);
@@ -129,33 +133,14 @@ function MainAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        {/* <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton> */}
-        <p>Dashboard</p>
-      </MenuItem>
-      <MenuItem>
-        {/* <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton> */}
-        <p>Books</p>
-      </MenuItem>
-      <MenuItem >
-        {/* <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton> */}
-        <AccountButton />
-      </MenuItem>
+      <ListItemLink primary="Books" to="/books"/>
+      <ListItemLink primary="Dashboard" to="/dashboard"/>
+      {
+        props.loggedin ? <ListItemLink primary="Login" to="/login" /> :
+        <ListItem button>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      }
     </Menu>
   );
 
@@ -163,14 +148,6 @@ function MainAppBar() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          {/* <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton> */}
           <Typography className={classes.title} variant="h6" noWrap>
             Bookmarker
           </Typography>
@@ -190,31 +167,14 @@ function MainAppBar() {
           {/* <div className={classes.grow} /> */}
           <div className={classes.sectionDesktop}>
             <div>
-              Books
+              <ButtonLink to="/books" text="Books" />
             </div>
             <div>
-              <AccountButton />
+              <ButtonLink to="/dashboard" text="Home" />
             </div>
-            {/* <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton> */}
+            <div>
+              <AccountButton loggedIn={props.loggedIn}/>
+            </div>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

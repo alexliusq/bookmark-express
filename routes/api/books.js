@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const Books = require('../../models/books');
+const Annotations = require('../../models/annotations');
 const { validateBookDetails } = require('../../validation/books');
 
 async function addBook(bookID) {
@@ -20,21 +21,25 @@ async function addBook(bookID) {
 //     console.log(res);
 //   });
 
-router.get('/', (req, res) => {
-  Books.getAllBookDetails()
-    .then((bookResponse) => {
-      // console.log('yello');
-      // console.log(books);
-      res.json(bookResponse);
-    })
-    .catch((err) => res.status(404).json({ noBooksFound: 'No Books Found' }));
-});
+router.get('/', async (req, res) => {
+  try {
+    let books = await Books.getAllBookDetails()
+    books = await Promise.all(books.map(book => Annotations.addAnnotationCountForBook(book)));
+    res.json(books);
+  } catch (errors) {
+    res.status(404).json({ errors, noBooksFound: 'No Books Found' }));
+  }
+);
 
-router.get('/:id', (req, res) => {
-  Books.getBookDetails(req.params.id)
-    .then((book) => res.json(book))
-    .catch((err) => res.status(404).json({ noBookFound: 'No Book With ID Found' }));
-});
+router.get('/:id', async (req, res) => {
+  try {
+    let book = await Books.getBookDetails(req.params.id);
+    book = await Annotations.addAnnotationCountForBook(book);
+    res.json(book)
+  } catch (errors) {
+    res.status(404).json({ errors, noBookFound: 'No Book With ID Found' })
+  }
+);
 
 // router.post('/goodreads', (req, res) => {
 //   console.log(req.body);

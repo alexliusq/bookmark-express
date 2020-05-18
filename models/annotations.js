@@ -24,7 +24,7 @@ const annosSelectQuery = () => (
 // }
 
 async function getAllAnnotations(limit = 50, user_id) {
-  //not multi user enabled for now.
+  // not multi user enabled for now.
   const query = annosSelectQuery();
 
   if (multipleUsersEnabled) query.append(SQL ` WHERE user_id = ${user_id}`);
@@ -189,6 +189,18 @@ async function deleteAnnotation(annotation) {
   return rows[0];
 }
 
+async function addAnnotationCountForBook(book) {
+  const { id: bookID} = book;
+  const { rows } = await db.query(SQL`
+    SELECT count(*) AS count FROM kindle_annotations WHERE book_id = ${bookID}
+  `);
+
+  return {
+    ...book,
+    annotationCount: rows[0].count,
+  };
+}
+
 module.exports = {
   addCalibreAnnotation,
   getAllAnnotations,
@@ -197,4 +209,5 @@ module.exports = {
   addAnnotation,
   editAnnotation,
   deleteAnnotation,
+  addAnnotationCountForBook,
 }
