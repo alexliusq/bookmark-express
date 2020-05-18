@@ -7,7 +7,7 @@ module.exports = {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const {rows} = await db.query(SQL`
+      const { rows } = await db.query(SQL`
       INSERT INTO users (email, password)
         VALUES (${email}, ${hashedPassword})
         RETURNING id, email;
@@ -15,8 +15,7 @@ module.exports = {
 
       const [user] = rows;
       return user;
-    }
-    catch (error) {
+    } catch (error) {
       if (error.constraint === 'users_email_key') {
         return null;
       }
@@ -24,9 +23,9 @@ module.exports = {
     }
   },
   async find(email) {
-    const {rows} = await db.query(SQL`
+    const { rows } = await db.query(SQL`
     SELECT id, email, password FROM users WHERE email=${email} LIMIT 1;
     `);
     return rows[0];
-  }
-}
+  },
+};

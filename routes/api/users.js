@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    return res.status(200).json(user);
+    return res.status(200).json({ success: 'User created', user });
   } catch (error) {
     console.error(
       `createUser({ email: ${req.body.email} }) >> Error: ${error.stack}`,

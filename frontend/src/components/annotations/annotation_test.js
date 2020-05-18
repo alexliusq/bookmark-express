@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { fetchAnnotation, fetchAllAnnotations,
   fetchBookAnnotations } from '../../actions/annotation_actions';
 import AnnotationCard from './annotation_card';
-import MainGridBox from '../main_presentation';
+import MainGrid from '../main_grid';
 import BookContainer from '../books/book_container';
 import AnnotationEditCard from './annotation_edit_card';
 import AnnotationCardContainer from './annotation_container';
@@ -68,14 +68,14 @@ class AnnotationTest extends React.Component {
 
   render() {
     return (
-      <MainGridBox>
+      <MainGrid>
         <Grid container direction='column' spacing={1}>
           <Grid item>
             {/* <BookContainer bookID={this.state.bookID}/> */}
           </Grid>
           <AnnotationCardContainer annotation={tempAnnotation} />
         </Grid>
-      </MainGridBox>
+      </MainGrid>
   )
   }
 }

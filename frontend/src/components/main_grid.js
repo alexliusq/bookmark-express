@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 
-export default function MainGridBox(props) {
+export default function MainGrid(props) {
   return(
     <Grid container justify="center">
       <Grid item/>

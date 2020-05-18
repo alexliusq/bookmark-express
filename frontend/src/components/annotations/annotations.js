@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { fetchAnnotation, fetchAllAnnotations,
   fetchBookAnnotations } from '../../actions/annotation_actions';
 import AnnotationContainer from './annotation_container';
-import MainGridBox from '../main_presentation';
+import Maingrid from '../main_grid';
 import BookContainer from '../books/book_container';
 
 const mapStateToProps = (state) => {
@@ -36,14 +36,14 @@ class Annotations extends React.Component {
   render() {
     if (this.props.allAnnotations.length === 0) {
       return (
-      <MainGridBox>
+      <Maingrid>
         <BookContainer bookID={this.state.bookID}/>
         <div>There are no Annotations for this book</div> 
-      </MainGridBox>
+      </Maingrid>
       )
     } else {
       return (
-        <MainGridBox>
+        <Maingrid>
           <Grid container direction='column' spacing={1}>
             <Grid item>
               <BookContainer bookID={this.state.bookID}/>
@@ -59,7 +59,7 @@ class Annotations extends React.Component {
               )})
             }
           </Grid>
-        </MainGridBox>
+        </Maingrid>
       )
     }
   }
