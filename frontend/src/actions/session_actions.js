@@ -33,10 +33,10 @@ export const signup = user => dispatch => (
     )) 
 );
 
-export const login = user => dispatch => (
+export const login = (user, rememberMe) => dispatch => (
     SessionAPI.login(user).then(res => {
         const { token } = res.data;
-        localStorage.setItem('jwtToken', token);
+        if (rememberMe) localStorage.setItem('jwtToken', token);
         SessionAPI.setAuthToken(token);
         const decoded = jwt_decode(token);
         dispatch(receiveCurrentUser(decoded))

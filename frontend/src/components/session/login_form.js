@@ -86,10 +86,13 @@ export default function LoginForm(props) {
             value={props.password}
             onChange={props.handlePasswordChange}
           />
-          {/* <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+          <FormControlLabel
+            control={
+              <Checkbox value="remember" color="primary"
+              checked={props.rememberMe}/>
+            }
             label="Remember me"
-          /> */}
+          />
           <Button
             type="submit"
             fullWidth

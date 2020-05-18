@@ -23,6 +23,7 @@ class LoginContainer extends React.Component {
       email: '',
       password: '',
       errors: props.errors || {},
+      rememberMe: true
     }
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -41,11 +42,17 @@ class LoginContainer extends React.Component {
     })
   }
 
+  handleRememberMe(event) {
+    this.setState({
+      rememberMe: event.target.checked
+    })
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     // console.log('hello');
     const user = { email: this.state.email, password: this.state.password }
-    this.props.login(user);
+    this.props.login(user, this.state.rememberMe);
   }
 
   render() {
@@ -53,6 +60,7 @@ class LoginContainer extends React.Component {
       <LoginForm
         email={this.state.email}
         password={this.state.password}
+        rememberMe={this.state.rememberMe}
         handleEmailChange={this.handleEmailChange}
         handlePasswordChange={this.handlePasswordChange}
         handleSubmit={this.handleSubmit}
