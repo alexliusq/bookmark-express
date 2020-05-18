@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchBook, fetchAllBooks } from '../../actions/book_actions';
 import BookBox from './book_box';
+import BookLinkListItem from './book_link_list_item';
 
 const mapStateToProps = (state) => {
   return {
@@ -41,7 +42,7 @@ class Books extends React.Component {
         <div>
           <h2>All Books</h2>
           {this.props.allBooks.map((book, idx) => (
-            <BookBox key={idx} book={book} />
+            <BookLinkListItem key={idx} book={book} />
           ))}
         </div>
       );
