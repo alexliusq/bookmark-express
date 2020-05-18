@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Alert from '@material-ui/lab/Alert';
 
 // function Copyright() {
 //   return (
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoginForm() {
+export default function LoginForm(props) {
   const classes = useStyles();
 
   return (
@@ -69,6 +70,8 @@ export default function LoginForm() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={props.email}
+            onChange={props.handleEmailChange}
           />
           <TextField
             variant="outlined"
@@ -80,17 +83,20 @@ export default function LoginForm() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={props.password}
+            onChange={props.handlePasswordChange}
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={props.handleSubmit}
           >
             Sign In
           </Button>
@@ -106,6 +112,9 @@ export default function LoginForm() {
               </Link>
             </Grid>
           </Grid>
+          {Object.keys(props.errors).map((error, i) => (
+              <Alert  severity="error">{props.errors[error]}</Alert>
+              ))}
         </form>
       </div>
       {/* <Box mt={8}>

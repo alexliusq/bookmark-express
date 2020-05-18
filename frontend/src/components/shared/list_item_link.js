@@ -15,12 +15,10 @@ function ListItemLink(props) {
   );
 
   return (
-    <li>
       <ListItem button component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} />
       </ListItem>
-    </li>
   );
 }
 

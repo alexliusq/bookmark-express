@@ -1,9 +1,7 @@
-let db = require('./db');
 const fs = require('fs').promises;
-
 const SQL = require('sql-template-strings');
-
 const path = require('path');
+const db = require('./db');
 
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
@@ -44,50 +42,47 @@ async create(email, password) {
 */
 
 async function initializeBooksDB() {
-  let queryString = await fs.readFile(tempDataFile, "utf-8");
+  const queryString = await fs.readFile(tempDataFile, 'utf-8');
   // console.log('boo');
-  let res = await db.query(queryString);
+  const res = await db.query(queryString);
   console.log(res);
 }
 
 async function dropBooksDB() {
-  let query = `DROP TABLE books, goodreads_details, kindle_annotations,
+  const query = `DROP TABLE books, goodreads_details, kindle_annotations,
   calibre_authors, calibre_authors_books, calibre_metadata
   `;
-  let res = await db.query(query);
+  const res = await db.query(query);
   console.log(res);
 }
 
 
-
 async function createBookWithCalibre(calibreMetaData) {
-  const { 
-    identifiers, title, author_sort_map
+  const {
+    identifiers, title, author_sort_map,
   } = calibreMetaData;
 
   const { isbn } = identifiers;
 
 
   try {
-    const authorIDs = await Promise.all(Object.keys(author_sort_map).map( author => {
-      return insertCalibreAuthor(author, author_sort_map[author]);
-    }));
-    
+    const authorIDs = await Promise.all(Object.keys(author_sort_map).map((author) => insertCalibreAuthor(author, author_sort_map[author])));
+
     const bookID = await insertBook(title, isbn);
     const calibreID = await insertCalibreMetadata(calibreMetaData);
     const res = await Promise.all(
-      authorIDs.map(authorID => insertAuthorIDBookID(authorID, calibreID))
+      authorIDs.map((authorID) => insertAuthorIDBookID(authorID, calibreID)),
     );
     return calibreID;
-  } catch(err) {
+  } catch (err) {
     console.log(err);
-    throw(err);
+    throw (err);
   }
 }
 
 async function insertBook(title, isbn) {
   try {
-    const {rows} = await db.query(SQL`
+    const { rows } = await db.query(SQL`
     INSERT INTO books
       (title, completed_bool, isbn)
     VALUES
@@ -97,8 +92,8 @@ async function insertBook(title, isbn) {
     RETURNING id;
     `);
     return rows[0].id;
-  } catch(err) {
-    throw (err)
+  } catch (err) {
+    throw (err);
   }
 }
 
@@ -114,7 +109,7 @@ async function insertCalibreAuthor(author, author_sort) {
     RETURNING id;
     `);
     return rows[0].id;
-  } catch(err) {
+  } catch (err) {
     throw err;
   }
 }
@@ -145,17 +140,17 @@ __proto__: Object
 */
 
 async function insertCalibreMetadata(calibreMetaData) {
-  let { 
+  let {
     identifiers, cover, title, series, publisher,
-    pubdate, title_sort, comments
+    pubdate, title_sort, comments,
   } = calibreMetaData;
 
-  pubdate = pubdate.split("T")[0];
+  pubdate = pubdate.split('T')[0];
 
-  const {isbn, amazon} = identifiers;
+  const { isbn, amazon } = identifiers;
 
   try {
-    const {rows} = await db.query(SQL`
+    const { rows } = await db.query(SQL`
     INSERT INTO calibre_metadata
       (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
     VALUES
@@ -165,32 +160,31 @@ async function insertCalibreMetadata(calibreMetaData) {
     DO UPDATE SET isbn = EXCLUDED.isbn
     RETURNING id;
     `);
-  
+
     return rows[0].id;
   } catch (err) {
-    throw(err);
+    throw (err);
   }
 }
 
 
 async function insertAuthorIDBookID(authorID, bookID) {
   try {
-    const {rows} = await db.query(SQL`
+    const { rows } = await db.query(SQL`
     INSERT INTO calibre_authors_books (author_id, book_id)
     VALUES (${authorID}, ${bookID})
     ON CONFLICT (author_id, book_id)
     DO UPDATE SET book_id = EXCLUDED.book_id
     RETURNING author_id, book_id;
     `);
-    return rows[0].id 
-  } catch(err) {
-    throw(err);
+    return rows[0].id;
+  } catch (err) {
+    throw (err);
   }
 }
 
 async function linkBookToAuthor(isbn, author) {
-
-  let res = await db.query(SQL`
+  const res = await db.query(SQL`
   INSERT INTO calibre_authors_books (author_id, book_id)
   VALUES 
     ((
@@ -206,17 +200,16 @@ async function linkBookToAuthor(isbn, author) {
   return res;
 }
 
-  
 
 async function createBookWithGoodreads(book) {
-  let {
+  const {
     id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
     publisher, publication_year, publication_month, publication_day, is_ebook,
-    description
+    description,
   } = book;
 
   try {
-    let res = await db.query(SQL`
+    const res = await db.query(SQL`
     INSERT INTO goodreads_details
       (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
         publisher, publication_year, publication_month, publication_day, is_ebook,
@@ -227,17 +220,16 @@ async function createBookWithGoodreads(book) {
         ${is_ebook}, ${description})
     `);
 
-    let res2 = await insertBook(title, isbn);
-    let res3 = await linkGoodreads(isbn);
-    return {res, res2, res3};
-
-  } catch(err) {
+    const res2 = await insertBook(title, isbn);
+    const res3 = await linkGoodreads(isbn);
+    return { res, res2, res3 };
+  } catch (err) {
     console.log(err);
   }
 }
 
 async function linkGoodreads() {
-  let res = await db.query(SQL`
+  const res = await db.query(SQL`
   UPDATE
     books
   SET
@@ -255,7 +247,7 @@ async function linkGoodreads() {
 }
 
 async function getBookDetails(book_id) {
-  const {rows} = await db.query(SQL`
+  const { rows } = await db.query(SQL`
     SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
@@ -265,10 +257,10 @@ async function getBookDetails(book_id) {
   `);
 
   return rows[0];
-} 
+}
 
 async function getAllBookDetails(limit = 50) {
-  const {rows} = await db.query(SQL`
+  const { rows } = await db.query(SQL`
     SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
@@ -285,8 +277,8 @@ async function getBookID(title) {
     SELECT id FROM books WHERE title = ${title}
   `);
 
-  if(!rows[0]) return null;
-  
+  if (!rows[0]) return null;
+
   return rows[0].id;
 }
 
@@ -297,7 +289,7 @@ async function getBookID(title) {
 //     return insertCalibreAuthor(author, author_sort_map[author]);
 //   }));
 //   console.log(authorIDs);
-//   return authorIDs; 
+//   return authorIDs;
 // }
 // let ids;
 // testInsertAuthor({'bob':'bob', 'bob1':'bob1'}).then(authors => ids = authors);
@@ -316,4 +308,4 @@ module.exports = {
   createBookWithCalibre,
   getBookID,
   insertBook,
-}
+};
