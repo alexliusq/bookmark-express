@@ -9,10 +9,12 @@ function createAnnoLink(book) {
 export default function BookLinkListItem (props) {
   const {book} = props;
 
+  const secondary = 'Annotations: ' + book.annotationCount;
   return (
     <ListItemLink
       to={createAnnoLink(book)}
       primary={book.title}
+      secondary={secondary}
     />
   )
 }

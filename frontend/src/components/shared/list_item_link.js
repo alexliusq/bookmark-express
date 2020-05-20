@@ -7,7 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 
 function ListItemLink(props) {
-  const { icon, primary, to } = props;
+  const { icon, primary, to, secondary } = props;
 
   const renderLink = React.useMemo(
     () => React.forwardRef((itemProps, ref) => <RouterLink to={to} ref={ref} {...itemProps} />),
@@ -17,7 +17,7 @@ function ListItemLink(props) {
   return (
       <ListItem button component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText primary={primary} />
+        <ListItemText primary={primary} secondary={secondary}/>
       </ListItem>
   );
 }

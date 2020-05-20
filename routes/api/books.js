@@ -23,23 +23,23 @@ async function addBook(bookID) {
 
 router.get('/', async (req, res) => {
   try {
-    let books = await Books.getAllBookDetails()
+    let books = await Books.getAllBookDetails();
     books = await Promise.all(books.map(book => Annotations.addAnnotationCountForBook(book)));
     res.json(books);
   } catch (errors) {
-    res.status(404).json({ errors, noBooksFound: 'No Books Found' }));
+    res.status(404).json({ errors, noBooksFound: 'No Books Found' });
   }
-);
+});
 
 router.get('/:id', async (req, res) => {
   try {
     let book = await Books.getBookDetails(req.params.id);
     book = await Annotations.addAnnotationCountForBook(book);
-    res.json(book)
+    res.json(book);
   } catch (errors) {
-    res.status(404).json({ errors, noBookFound: 'No Book With ID Found' })
+    res.status(404).json({ errors, noBookFound: 'No Book With ID Found' });
   }
-);
+});
 
 // router.post('/goodreads', (req, res) => {
 //   console.log(req.body);
