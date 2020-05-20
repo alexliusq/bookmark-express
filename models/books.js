@@ -27,6 +27,13 @@ pg.query(SQL`SELECT author FROM books WHERE name = ${book} AND author = ${author
 //   console.log(res);
 // }
 
+// Get annotation count for each book
+//  SELECT count(kindle_annotations.id) as anno_count, books.title from books join kindle_annotations
+// on kindle_annotations.title= books.title group by books.title order by anno_count; 
+
+// delete books without annotations
+// delete from books where id in ( SELECT books.id FROM books LEFT OUTER JOIN kindle_annotations ON 
+// books.id = kindle_annotations.book_id WHERE kindle_annotations.book_id is null  );   
 
 async function createBookWithCalibre(calibreMetaData) {
   const {
