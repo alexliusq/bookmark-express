@@ -89,7 +89,9 @@ export default function LoginForm(props) {
           <FormControlLabel
             control={
               <Checkbox value="remember" color="primary"
-              checked={props.rememberMe}/>
+              checked={props.rememberMe}
+              onChange={props.handleRememberMe}
+              />
             }
             label="Remember me"
           />

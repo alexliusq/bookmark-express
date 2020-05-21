@@ -46,10 +46,10 @@ export default function BookBox(props) {
           component='img'
           image={book.image_url}
         /> */}
-      <ListItemAvatar>
+      {/* <ListItemAvatar>
         <Avatar variant="square" className={classes.large}
           src={book.image_url} />
-      </ListItemAvatar>
+      </ListItemAvatar> */}
       <ListItemText
         primary={book.title}
         secondary={

@@ -8,7 +8,7 @@ const BooksReducer = (state = {
   let newState = Object.assign({}, state);
 
   switch(action.type) {
-    case RECEIVE_BOOK:
+  case RECEIVE_BOOK:
       newState.book = action.book;
       return newState;
     case RECEIVE_ALL_BOOKS:

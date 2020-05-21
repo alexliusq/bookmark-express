@@ -26,7 +26,6 @@ const AnnotationsReducer = (state = {
       newState.allAnnotations = action.allAnnotations;
       return newState;
     case EDIT_ANNOTATION:
-      console.log(action);
       newState.allAnnotations = state.allAnnotations
         .map(anno => {
           if (anno.id === action.annotationToEdit.id) return action.annotationToEdit;

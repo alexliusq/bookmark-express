@@ -104,11 +104,6 @@ class TagsAnnotationContainer extends React.Component {
     deletedOptions.forEach(deletedOption => this.handleDeleteTagFromAnnotation(deletedOption));
   }
 
-
-  handleAddTag(event) {
-    event.preventDefault();
-  }
-
   render() {
     return (
       <TagsAnnotation

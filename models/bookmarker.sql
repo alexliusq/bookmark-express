@@ -2,28 +2,41 @@ CREATE TABLE "books" (
   "id" SERIAL PRIMARY KEY,
   "title" text UNIQUE NOT NULL,
   "isbn" text,
-  "goodreads_details_id" int,
-  "calibre_metadata_id" int
+  "goodreads_books_id" int REFERENCES "goodreads_books" ("id"),
+  "calibre_books_id" int REFERENCES "calibre_books" ("id")
 );
 
 CREATE TABLE IF NOT EXISTS "users" (
   "id" SERIAL PRIMARY KEY,
-  "email" text UNIQUE,
-  "password" text
+  "email" text UNIQUE NOT NULL,
+  "password" text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "users_books" (
-  "user_id" int NOT NULL,
-  "book_id" int NOT NULL
+  "user_id" int NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE,
+  "book_id" int NOT NULL REFERENCES "books" ("id") ON DELETE CASCADE
 );
 
 CREATE INDEX users_email on users (email);
 
-ALTER TABLE "users_books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
-ALTER TABLE "users_books" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "users_books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "users_books" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
 
+CREATE TABLE "goodreads_authors" (
+  "id" SERIAL PRIMARY KEY,
+  "name" text NOT NULL,
+  "role" text,
+  "image_url" text,
+  "small_image_url" text,
+  "link" text
+)
 
-CREATE TABLE "goodreads_details" (
+CREATE TABLE "goodreads_books_authors" (
+  "book_id" int NOT NULL REFERENCES "goodreads_authors"("id") ON DELETE CASCADE,
+  "author_id" int NOT NULL REFERENCES "goodreads_books"("id") ON DELETE CASCADE
+)
+
+CREATE TABLE "goodreads_books" (
   "id" SERIAL PRIMARY KEY,
   "title" text NOT NULL,
   "isbn13" varchar,
@@ -93,9 +106,9 @@ CREATE TABLE "calibre_metadata" (
   "series" text
 );
 
-ALTER TABLE "books" ADD FOREIGN KEY ("calibre_metadata_id") REFERENCES "calibre_metadata" ("id");
+-- ALTER TABLE "books" ADD FOREIGN KEY ("calibre_metadata_id") REFERENCES "calibre_metadata" ("id");
 
-ALTER TABLE "books" ADD FOREIGN KEY ("goodreads_details_id") REFERENCES "goodreads_details" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "books" ADD FOREIGN KEY ("goodreads_details_id") REFERENCES "goodreads_details" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "kindle_annotations" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id");
 

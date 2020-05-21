@@ -9,6 +9,5 @@ export const postTagToAnnotation = (data) => {
 }
 
 export const deleteTagFromAnnotation = (data) => {
-  console.log(data);
   return axios.delete('/api/tags/', {data});
 }
