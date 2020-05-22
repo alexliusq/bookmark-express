@@ -20,7 +20,7 @@ pg.query(SQL`SELECT author FROM books WHERE name = ${book} AND author = ${author
 // }
 
 // async function dropBooksDB() {
-//   const query = `DROP TABLE books, goodreads_details, kindle_annotations,
+//   const query = `DROP TABLE books, goodreads_books, kindle_annotations,
 //   calibre_authors, calibre_authors_books, calibre_metadata
 //   `;
 //   const res = await db.query(query);
@@ -46,7 +46,7 @@ async function createBookWithCalibre(calibreMetaData) {
   try {
     const authorIDs = await Promise.all(Object.keys(author_sort_map).map((author) => insertCalibreAuthor(author, author_sort_map[author])));
 
-    const bookID = await insertBook(title, isbn);
+    const bookID = await insertBookGetID(title, isbn);
     const calibreID = await insertCalibreMetadata(calibreMetaData);
     const res = await Promise.all(
       authorIDs.map((authorID) => insertAuthorIDBookID(authorID, calibreID)),
@@ -58,7 +58,7 @@ async function createBookWithCalibre(calibreMetaData) {
   }
 }
 
-async function insertBook(title, isbn) {
+async function insertBookGetID(title, isbn) {
   const { rows } = await db.query(SQL`
   INSERT INTO books
     (title, completed_bool, isbn)
@@ -68,7 +68,7 @@ async function insertBook(title, isbn) {
   DO UPDATE SET title = EXCLUDED.title
   RETURNING id;
   `);
-  return rows[0].id;
+  return (rows[0] && rows[0].id);
 }
 
 async function insertCalibreAuthor(author, author_sort) {
@@ -137,6 +137,17 @@ async function linkBookToAuthor(isbn, author) {
   return res;
 }
 
+async function linkGoodreads(bookID, goodreadsID) {
+  const res = await db.query(SQL`
+  UPDATE
+    books
+  SET
+    books.goodreads_books_id = ${goodreadsID}
+  `);
+
+  return res;
+}
+
 
 async function createBookWithGoodreads(book) {
   const {
@@ -147,7 +158,7 @@ async function createBookWithGoodreads(book) {
 
   try {
     const res = await db.query(SQL`
-    INSERT INTO goodreads_details
+    INSERT INTO goodreads_books
       (id, title, isbn13, kindle_asin, marketplace_id, image_url, language_code,
         publisher, publication_year, publication_month, publication_day, is_ebook,
         description)
@@ -155,32 +166,17 @@ async function createBookWithGoodreads(book) {
       (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
         ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
         ${is_ebook}, ${description})
+      ON CONFLICT DO UPDATE SET id = EXCLUDED.id
+      RETURNING id;
     `);
+    const goodreadsID = res.rows[0] && res.rows[0].id;
 
-    const res2 = await insertBook(title, isbn);
-    const res3 = await linkGoodreads(isbn);
-    return { res, res2, res3 };
+    const bookID = await insertBookGetID(title, isbn13);
+    const res2 = await linkGoodreads(bookID, goodreadsID);
+    return { bookID, goodreadsID };
   } catch (err) {
     console.log(err);
   }
-}
-
-async function linkGoodreads() {
-  const res = await db.query(SQL`
-  UPDATE
-    books
-  SET
-    a.goodreads_details_id = b.id,
-  FROM
-    books AS a
-    INNER JOIN goodreads_details AS b
-      ON a.isbn = b.isbn
-  WHERE
-    a.isbn = ${isbn} AND
-    b.isbn = ${isbn}
-  `);
-
-  return res;
 }
 
 async function getBookDetails(book_id) {
@@ -189,7 +185,7 @@ async function getBookDetails(book_id) {
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
     LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
-    LEFT JOIN goodreads_details AS c ON a.isbn = c.isbn13
+    LEFT JOIN goodreads_books AS c ON a.isbn = c.isbn13
     WHERE a.id = ${book_id}
   `);
 
@@ -202,7 +198,7 @@ async function getAllBookDetails(limit = 50) {
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
     LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
-    LEFT JOIN goodreads_details AS c ON a.isbn = c.isbn13
+    LEFT JOIN goodreads_books AS c ON a.isbn = c.isbn13
     LIMIT ${limit}
   `);
 
@@ -244,7 +240,7 @@ module.exports = {
   getAllBookDetails,
   createBookWithCalibre,
   getBookID,
-  insertBook,
+  insertBookGetID,
 };
 
 /* error object
