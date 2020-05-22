@@ -7,3 +7,7 @@ export const getAllBookDetails = () => {
 export const getBookDetails = (id) => {
   return axios.get(`/api/books/${id}`);
 }
+
+export const addGoodreadsBook = (goodreadsID) => {
+  return axios.put(`/api/books/goodreads/${goodreadsID}`);
+}

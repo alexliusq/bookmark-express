@@ -156,6 +156,9 @@ async function createBookWithGoodreads(book) {
     description,
   } = book;
 
+  const bookCols = `title, isbn13 AS isbn, image_url AS imageURL, publisher,
+    publication_year AS publicationYear, publication_month AS publicationMonth,
+    publication_day AS publicationDay, description`;
   try {
     const res = await db.query(SQL`
     INSERT INTO goodreads_books
@@ -168,12 +171,15 @@ async function createBookWithGoodreads(book) {
         ${is_ebook}, ${description})
       ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id
       RETURNING id;
-    `);
+    `.append(bookCols));
     const goodreadsID = res.rows[0] && res.rows[0].id;
 
     const bookID = await insertBookGetID(title, isbn13);
     const res2 = await linkGoodreads(bookID, goodreadsID);
-    return bookID;
+    return {
+      ...res.rows[0],
+      bookID,
+    }
   } catch (err) {
     console.log(err);
   }

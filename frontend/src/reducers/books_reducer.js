@@ -1,4 +1,5 @@
-import { RECEIVE_BOOK, RECEIVE_ALL_BOOKS } from '../actions/book_actions';
+import { RECEIVE_BOOK, RECEIVE_ALL_BOOKS,
+  APPEND_BOOK } from '../actions/book_actions';
 
 const BooksReducer = (state = {
   allBooks: [],
@@ -13,6 +14,9 @@ const BooksReducer = (state = {
       return newState;
     case RECEIVE_ALL_BOOKS:
       newState.allBooks = action.allBooks;
+      return newState;
+    case APPEND_BOOK:
+      newState.allBooks = [...state.allBooks, action.book];
       return newState;
     default:
       return state;

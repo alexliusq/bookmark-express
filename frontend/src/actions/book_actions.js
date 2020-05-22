@@ -1,12 +1,21 @@
-import { getAllBookDetails, getBookDetails } from '../util/book_api_util';
+import { getAllBookDetails, getBookDetails,
+  createGoodreadsBook } from '../util/book_api_util';
 
 export const RECEIVE_BOOK = "RECEIVE_BOOK";
 export const RECEIVE_ALL_BOOKS = "RECEIVE_ALL_BOOKS";
+export const APPEND_BOOK = "APPEND_BOOK";
 
 function convertPubdateToDate(book) {
   if (book.pubdate) {
     const pubdate = new Date(...book.pubdate.split('-'));
-    console.log(pubdate);
+    // console.log(pubdate);
+    return {
+      ...book,
+      pubdate
+    }
+  } else if (book.publicationYear) {
+    const pubdate = new Date(book.publicationYear,
+      book.publicationMonth, book.publicationDay);
     return {
       ...book,
       pubdate
@@ -27,6 +36,12 @@ export const receiveAllBooks = (allBooks) => ({
   allBooks: allBooks.map(book => convertPubdateToDate(book))
 });
 
+export const appendBook = (book => ({
+  type: APPEND_BOOK,
+  book: convertPubdateToDate(book)
+}))
+
+
 export const fetchBook = (id) => (dispatch) => (
   getBookDetails(id)
     .then(book => dispatch(receiveBook(book.data)))
@@ -39,4 +54,11 @@ export const fetchAllBooks = () => (dispatch) => (
       dispatch(receiveAllBooks(allBooks.data))
     })
     .catch(err => console.log(err))
+);
+
+export const addGoodreadsBook = (goodreadsID) => (dispatch) => (
+  createGoodreadsBook(goodreadsID)
+    .then(book => {
+      dispatch(add)
+    })
 );

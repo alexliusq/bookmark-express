@@ -9,7 +9,7 @@ const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 const multipleUsersEnabled = require('../config/multiple_users').enabled;
 
 
-const querySelectCols =  ` 
+const querySelectCols = ` 
   id, book_id, bookline, title, author, language, begin, "end",
   TO_CHAR(time,  'yyyy-mm-dd-hh-mi-ss') AS time, highlight, note , page
   `;
