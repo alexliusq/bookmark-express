@@ -8,12 +8,14 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '2px 4px',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'baseline',
     width: 300
   },
   input: {
     flex: 1,
     marginLeft: 5,
+    marginTop: 5,
+    marginBottom: 5,
   },
   addButton: {
     marginLeft: 5
@@ -22,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddBook(props) {
 
-  const { goodreadsID, handleGoodreadsID, 
+  const { goodreadsID, handleGoodreadsIDChange, 
     goodreadsError } = props;
 
   const classes = useStyles();
@@ -33,22 +35,25 @@ export default function AddBook(props) {
       {
         !expand && <Button onClick={() => (setExpand(true))}>Add Book...</Button>
       }
-      <Paper component="form" className={classes.root}
+      {
+        expand &&
+        <Paper component="form" className={classes.root}
         onBlur={() => setExpand(false)}
         >
         <TextField 
           autoFocus
+          label="Number"
           className={classes.input}
           placeholder="Goodreads ID"
           value={goodreadsID}
-          onChange={handleGoodreadsID}
+          onChange={handleGoodreadsIDChange}
           error={goodreadsError}
-          helperText="Must be Number"
         />
-        <Button className={classes.addButton}>
+        <Button className={classes.addButton} disabled={goodreadsError}>
           Add
         </Button>
       </Paper>
+      }
       </React.Fragment>
     );
 }

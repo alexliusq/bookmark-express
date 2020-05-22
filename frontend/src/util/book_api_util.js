@@ -8,6 +8,6 @@ export const getBookDetails = (id) => {
   return axios.get(`/api/books/${id}`);
 }
 
-export const addGoodreadsBook = (goodreadsID) => {
-  return axios.put(`/api/books/goodreads/${goodreadsID}`);
+export const createGoodreadsBook = (goodreadsID) => {
+  return axios.post(`/api/books/goodreads/${goodreadsID}`);
 }

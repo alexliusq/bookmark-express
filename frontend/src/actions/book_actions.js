@@ -59,6 +59,7 @@ export const fetchAllBooks = () => (dispatch) => (
 export const addGoodreadsBook = (goodreadsID) => (dispatch) => (
   createGoodreadsBook(goodreadsID)
     .then(book => {
-      dispatch(add)
+      dispatch(appendBook(book.data))
     })
+    .catch(err => console.log(err))
 );
