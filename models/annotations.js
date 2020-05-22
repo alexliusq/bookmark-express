@@ -100,7 +100,7 @@ async function addAnnotation(annotation, user_id) {
   let book_id = await Books.getBookID(title);
   if (!book_id) {
     console.log('Could not find pre-existing book to link annotations to');
-    book_id = await Books.insertBook(title);
+    book_id = await Books.insertBookGetID(title);
   }
 
   let matchID = await getMatchingAnnotationID(book_id, end);
@@ -190,7 +190,7 @@ async function deleteAnnotation(annotation) {
 }
 
 async function addAnnotationCountForBook(book) {
-  const { id: bookID} = book;
+  const { id: bookID } = book;
   const { rows } = await db.query(SQL`
     SELECT count(*) AS count FROM kindle_annotations WHERE book_id = ${bookID}
   `);

@@ -25,11 +25,12 @@ class Annotations extends React.Component {
     super(props);
     const {bookID} = this.props.match.params;
     this.state = {
-      bookID
+      bookID,
+      isRetrieving: false
     }
   }
 
-  componentDidMount() { 
+  componentDidMount() {
     this.props.fetchBookAnnotations(this.state.bookID);
   }
 
@@ -44,6 +45,7 @@ class Annotations extends React.Component {
     } else {
       return (
         <Maingrid>
+          
           <Grid container direction='column' spacing={1}>
             <Grid item>
               <BookContainer bookID={this.state.bookID}/>

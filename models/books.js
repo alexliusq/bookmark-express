@@ -35,22 +35,22 @@ pg.query(SQL`SELECT author FROM books WHERE name = ${book} AND author = ${author
 // delete from books where id in ( SELECT books.id FROM books LEFT OUTER JOIN kindle_annotations ON 
 // books.id = kindle_annotations.book_id WHERE kindle_annotations.book_id is null  );   
 
-async function createBookWithCalibre(calibreMetaData) {
+async function createBookWithCalibre(calibreBook) {
   const {
     identifiers, title, author_sort_map,
-  } = calibreMetaData;
+  } = calibreBook;
 
   const { isbn } = identifiers;
 
 
   try {
-    const authorIDs = await Promise.all(Object.keys(author_sort_map).map((author) => insertCalibreAuthor(author, author_sort_map[author])));
+    // const authorIDs = await Promise.all(Object.keys(author_sort_map).map((author) => insertCalibreAuthor(author, author_sort_map[author])));
 
     const bookID = await insertBookGetID(title, isbn);
-    const calibreID = await insertCalibreMetadata(calibreMetaData);
-    const res = await Promise.all(
-      authorIDs.map((authorID) => insertAuthorIDBookID(authorID, calibreID)),
-    );
+    const calibreID = await insertCalibreBook(calibreBook);
+    // const res = await Promise.all(
+    //   authorIDs.map((authorID) => insertAuthorIDBookID(authorID, calibreID)),
+    // );
     return calibreID;
   } catch (err) {
     console.log(err);
@@ -61,9 +61,9 @@ async function createBookWithCalibre(calibreMetaData) {
 async function insertBookGetID(title, isbn) {
   const { rows } = await db.query(SQL`
   INSERT INTO books
-    (title, completed_bool, isbn)
+    (title, isbn)
   VALUES
-    (${title}, false, ${isbn})
+    (${title}, ${isbn})
   ON CONFLICT (title)
   DO UPDATE SET title = EXCLUDED.title
   RETURNING id;
@@ -84,18 +84,18 @@ async function insertCalibreAuthor(author, author_sort) {
   return rows[0].id;
 }
 
-async function insertCalibreMetadata(calibreMetaData) {
+async function insertCalibreBook(calibreBook) {
   let {
     identifiers, cover, title, series, publisher,
     pubdate, title_sort, comments,
-  } = calibreMetaData;
+  } = calibreBook;
 
   pubdate = pubdate.split('T')[0];
 
   const { isbn, amazon } = identifiers;
 
   const { rows } = await db.query(SQL`
-  INSERT INTO calibre_metadata
+  INSERT INTO calibre_books
     (isbn, amazon, title, series, publisher, pubdate, title_sort, comments, cover)
   VALUES
     (${isbn}, ${amazon}, ${title}, ${series}, ${publisher}, ${pubdate},
@@ -129,7 +129,7 @@ async function linkBookToAuthor(isbn, author) {
       author = ${author}
     ),
     (
-      SELECT id FROM calibre_metadata WHERE
+      SELECT id FROM calibre_books WHERE
       isbn = ${isbn}
     ))
   `);
@@ -142,7 +142,7 @@ async function linkGoodreads(bookID, goodreadsID) {
   UPDATE
     books
   SET
-    books.goodreads_books_id = ${goodreadsID}
+    goodreads_books_id = ${goodreadsID}
   `);
 
   return res;
@@ -166,14 +166,14 @@ async function createBookWithGoodreads(book) {
       (${id}, ${title}, ${isbn13}, ${kindle_asin}, ${marketplace_id}, ${image_url},
         ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
         ${is_ebook}, ${description})
-      ON CONFLICT DO UPDATE SET id = EXCLUDED.id
+      ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id
       RETURNING id;
     `);
     const goodreadsID = res.rows[0] && res.rows[0].id;
 
     const bookID = await insertBookGetID(title, isbn13);
     const res2 = await linkGoodreads(bookID, goodreadsID);
-    return { bookID, goodreadsID };
+    return bookID;
   } catch (err) {
     console.log(err);
   }
@@ -184,7 +184,7 @@ async function getBookDetails(book_id) {
     SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
-    LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
+    LEFT JOIN  calibre_books AS b ON a.isbn = b.isbn
     LEFT JOIN goodreads_books AS c ON a.isbn = c.isbn13
     WHERE a.id = ${book_id}
   `);
@@ -197,7 +197,7 @@ async function getAllBookDetails(limit = 50) {
     SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
     TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
     FROM books AS a
-    LEFT JOIN  calibre_metadata AS b ON a.isbn = b.isbn
+    LEFT JOIN  calibre_books AS b ON a.isbn = b.isbn
     LEFT JOIN goodreads_books AS c ON a.isbn = c.isbn13
     LIMIT ${limit}
   `);

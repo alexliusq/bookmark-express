@@ -6,6 +6,10 @@ const Books = require('../../models/books');
 const Annotations = require('../../models/annotations');
 const { validateBookDetails } = require('../../validation/books');
 
+const goodreads = require('goodreads-api-node');
+const { goodreadsKey } = require('../../config/keys');
+const grClient = goodreads(goodreadsKey);
+
 async function addBook(bookID) {
   // let data = await grClient.showBook(bookID);
   // let { book } = data;
@@ -20,6 +24,18 @@ async function addBook(bookID) {
 //     data = res
 //     console.log(res);
 //   });
+
+router.post('/goodreads/:id', async (req, res) => {
+  try {
+    const { book } = await grClient.showBook(req.params.id);
+    console.log(book);
+    
+    const bookID = await Books.createBookWithGoodreads(book);
+    res.json({ bookID });
+  } catch (errors) {
+    res.json(errors);
+  }
+});
 
 router.get('/', async (req, res) => {
   try {

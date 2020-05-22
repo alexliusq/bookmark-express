@@ -1,11 +1,14 @@
 CREATE TABLE IF NOT EXISTS "books" (
   "id" SERIAL PRIMARY KEY,
   "title" text UNIQUE NOT NULL,
-  "isbn" text,
+  "isbn" varchar(13) UNIQUE,
   "goodreads_books_id" int,
   "calibre_books_id" int,
-  "kindle_annotations_id" int
+  "kindle_annotations_id" int,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
+
+ alter table books add column created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();  
 
 -- ALTER TABLE "users_books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
 -- ALTER TABLE "users_books" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
@@ -15,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "books" (
 CREATE TABLE IF NOT EXISTS "goodreads_books" (
   "id" SERIAL PRIMARY KEY,
   "title" text NOT NULL,
-  "isbn13" varchar,
+  "isbn13" varchar(13),
   "kindle_asin" varchar,
   "marketplace_id" varchar,
   "image_url" varchar,
@@ -25,7 +28,8 @@ CREATE TABLE IF NOT EXISTS "goodreads_books" (
   "publication_month" varchar(2),
   "publication_day" varchar(2),
   "is_ebook" bool,
-  "description" text
+  "description" text,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS "goodreads_authors" (
@@ -68,7 +72,8 @@ CREATE TABLE IF NOT EXISTS "calibre_books" (
   "pubdate" date,
   "comments" text,
   "cover" bool,
-  "series" text
+  "series" text,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
 
 ALTER TABLE "books" ADD FOREIGN KEY ("calibre_books_id") REFERENCES "calibre_books" ("id");
@@ -91,7 +96,8 @@ CREATE TABLE IF NOT EXISTS "kindle_annotations" (
   "statusline" text,
   "page" text,
   "ordernr" int,
-  "edited" boolean DEFAULT false
+  "edited_at" TIMESTAMP WITH TIMEZONE,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
 
 ALTER TABLE "kindle_annotations" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id");
@@ -107,7 +113,8 @@ CREATE TABLE IF NOT EXISTS "annotations_tags" (
 CREATE TABLE IF NOT EXISTS "tags" (
   "id" SERIAL PRIMARY KEY,
   "user_id" int UNIQUE,
-  "tag" text NOT NULL
+  "tag" text NOT NULL,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
 
 ALTER TABLE "annotations_tags" ADD FOREIGN KEY ("tag_id")
@@ -121,7 +128,9 @@ ALTER TABLE "annotations_tags" ADD CONSTRAINT annotation_id_tag_id_key
 CREATE TABLE IF NOT EXISTS "users" (
   "id" SERIAL PRIMARY KEY,
   "email" text UNIQUE NOT NULL,
-  "password" text NOT NULL
+  "password" text NOT NULL,
+  "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW(),
+  "edited_at" TIMESTAMP WITH TIMEZONE
 );
 
 CREATE TABLE IF NOT EXISTS "users_books" (

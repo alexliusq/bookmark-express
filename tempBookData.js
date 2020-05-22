@@ -1,4 +1,4 @@
-const goodReadsKey = require('./config/keys').goodReadsKey;
+const goodreadsKey = require('./config/keys').goodreadsKey;
 
 const goodreads = require('goodreads-api-node');
 const grClient = goodreads(goodReadsKey);
@@ -15,7 +15,26 @@ let bookIDs = [82120, 45186565, 38357895];
 const tempBookData = readTempBookData();
 const tempAnnotations = readAnnotations();
 const tempCalibreMetadata = readCalibreMetaData();
+debugger;
 
+function cleanISBN(isbn) {
+  const numberPattern = /\d+/g;
+  return isbn && isbn.match(numberPattern).join('');
+}
+// console.log(
+//   tempCalibreMetadata.map(book => cleanISBN(book.identifiers.isbn))
+// )
+
+function getBooksWithAnnotations() {
+  const titles = new Set();
+  tempAnnotations.forEach(anno => titles.add(anno.title));
+  return tempCalibreMetadata.filter(book => titles.has(book.title));
+}
+
+// getBooksWithAnnotations().forEach(book => {
+//   book.identifiers.isbn = cleanISBN(book.identifiers.isbn);
+//   booksDB.createBookWithCalibre(book)
+// });
 
 async function getData(bookIDs) {
   let tempBookData = await Promise.all(
