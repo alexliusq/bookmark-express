@@ -1,9 +1,9 @@
 const express = require('express');
 const passport = require('passport');
 
-// const goodreads = require('goodreads-api-node');
-// const { goodReadsKey } = require('./config/keys');
-// const grClient = goodreads(goodReadsKey);
+const goodreads = require('goodreads-api-node');
+const { goodreadsKey } = require('./config/keys');
+const grClient = goodreads(goodreadsKey);
 
 const app = express();
 const books = require('./routes/api/books');

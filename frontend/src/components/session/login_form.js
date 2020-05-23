@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
+import { Link as RouterLink } from 'react-router-dom';
+
 
 // function Copyright() {
 //   return (
@@ -112,7 +114,7 @@ export default function LoginForm(props) {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link variant="body2" component={RouterLink} to="/signup">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

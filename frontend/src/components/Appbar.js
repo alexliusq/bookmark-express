@@ -14,10 +14,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import ListItemLink from './shared/list_item_link';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ButtonLink from './shared/button_link';
-
+import { logout } from '../actions/session_actions';
+import AccountButton from './session/account_button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,19 +86,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
 const mapStateToProps = (state) => {
   return {loggedIn: state.session.isAuthenticated || state.session.isSignedIn}
 }
 
-function AccountButton(props) {
-  if (props.loggedIn) {
-    return (
-    <Button color="inherit">Logout</Button>
-    )
-  } else {
-    return (
-      <Button color="inherit">Login</Button>
-    )
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch(logout())
   }
 }
 
@@ -135,12 +130,7 @@ function MainAppBar(props) {
     >
       <ListItemLink primary="Books" to="/books"/>
       <ListItemLink primary="Dashboard" to="/dashboard"/>
-      {
-        props.loggedin ? <ListItemLink primary="Login" to="/login" /> :
-        <ListItem button>
-          <ListItemText primary="Logout" />
-        </ListItem>
-      }
+      <AccountButton listItem />
     </Menu>
   );
 
@@ -167,13 +157,17 @@ function MainAppBar(props) {
           {/* <div className={classes.grow} /> */}
           <div className={classes.sectionDesktop}>
             <div>
-              <ButtonLink to="/books" text="Books" />
+              <ButtonLink to="/books">
+                Books
+              </ButtonLink>
             </div>
             <div>
-              <ButtonLink to="/dashboard" text="Home" />
+              <ButtonLink to="/dashboard">
+                Dashboard
+              </ButtonLink>
             </div>
             <div>
-              <AccountButton loggedIn={props.loggedIn}/>
+              <AccountButton />
             </div>
           </div>
           <div className={classes.sectionMobile}>

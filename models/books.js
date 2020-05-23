@@ -5,6 +5,10 @@ const db = require('./db');
 
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
+const bookCols = ` title, isbn13 AS isbn, image_url AS imageURL, publisher,
+publication_year AS publicationYear, publication_month AS publicationMonth,
+publication_day AS publicationDay, description `;
+
 /* sql-template strings example
 // postgres:
 pg.query('SELECT author FROM books WHERE name = $1 AND author = $2', [book, author])
@@ -156,9 +160,6 @@ async function createBookWithGoodreads(book) {
     description,
   } = book;
 
-  const bookCols = `title, isbn13 AS isbn, image_url AS imageURL, publisher,
-    publication_year AS publicationYear, publication_month AS publicationMonth,
-    publication_day AS publicationDay, description`;
   try {
     const res = await db.query(SQL`
     INSERT INTO goodreads_books
@@ -170,7 +171,7 @@ async function createBookWithGoodreads(book) {
         ${language_code}, ${publisher}, ${publication_year}, ${publication_month}, ${publication_day},
         ${is_ebook}, ${description})
       ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id
-      RETURNING id;
+      RETURNING id, 
     `.append(bookCols));
     const goodreadsID = res.rows[0] && res.rows[0].id;
 
@@ -199,16 +200,21 @@ async function getBookDetails(book_id) {
 }
 
 async function getAllBookDetails(limit = 50) {
-  const { rows } = await db.query(SQL`
-    SELECT a.id, a.title, a.completed_bool, a.isbn, b.publisher, 
-    TO_CHAR(b.pubdate, 'yyyy-mm-dd') AS pubdate, b.comments AS description, b.series
-    FROM books AS a
-    LEFT JOIN  calibre_books AS b ON a.isbn = b.isbn
-    LEFT JOIN goodreads_books AS c ON a.isbn = c.isbn13
-    LIMIT ${limit}
-  `);
 
-  return rows;
+  const books = await  db.query(SQL`SELECT id, goodreads_books_id,
+   calibre_books_id FROM books LIMIT ${limit}`);
+
+  const goodreadsBooks = books.rows.map((row) => row.goodreads_books_id);
+  // console.log(goodreadsBooks);
+
+  let query = SQL` SELECT `
+    .append(bookCols)
+    .append(SQL` FROM goodreads_books WHERE goodreads_books.id = ANY
+    (${goodreadsBooks}::int[])`);
+
+  const goodreadsDetails = await db.query(query);
+
+  return goodreadsDetails.rows;
 }
 
 async function getBookID(title) {

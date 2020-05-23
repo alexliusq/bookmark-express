@@ -25,8 +25,8 @@ module.exports = {
     //   sql_template_query.values, start);
     // try {
 
-    let res = await pool.query(sql_template_query);
-    
+    const res = await pool.query(sql_template_query);
+    console.log('uo');
     logQuery(sql_template_query.text,
       sql_template_query.values);
     const duration = Date.now() - start;
