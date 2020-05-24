@@ -1,7 +1,7 @@
 const goodreadsKey = require('./config/keys').goodreadsKey;
 
 const goodreads = require('goodreads-api-node');
-const grClient = goodreads(goodReadsKey);
+const grClient = goodreads(goodreadsKey);
 // console.log(grClient);
 
 const fsPromise = require('fs').promises;
@@ -9,6 +9,7 @@ const fs = require('fs');
 const booksDB = require('./models/books');
 const Annotations = require('./models/annotations');
 const validateBookDetails = require('./validation/books');
+const request = require('request');
 
 let bookIDs = [82120, 45186565, 38357895];
 
@@ -30,6 +31,28 @@ function getBooksWithAnnotations() {
   tempAnnotations.forEach(anno => titles.add(anno.title));
   return tempCalibreMetadata.filter(book => titles.has(book.title));
 }
+
+function addBookWithISBN(isbn) {
+  const options = {
+    'method': 'POST',
+    'url': `http://localhost:5000/api/books/isbn/${isbn}`,
+    'headers': {
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJlbWFpbCI6InVpbHhlbGE3QGdtYWlsLmNvbSJ9LCJpYXQiOjE1OTAyODg2ODQsImV4cCI6MTU5MDg5MzQ4NH0.05HuQj5WpVwZrNZdYATErG2fJp53VbXpNqoAxH4ODNQ'
+    }
+  };
+  request(options, function (error, response) { 
+    if (error) throw new Error(error);
+    console.log(response.body);
+});
+}
+
+getBooksWithAnnotations().forEach(book => {
+  console.log('adding ', book.title)
+  const isbn = cleanISBN(book.identifiers.isbn);
+  if (isbn) {
+    addBookWithISBN(isbn);
+  }
+})
 
 // getBooksWithAnnotations().forEach(book => {
 //   book.identifiers.isbn = cleanISBN(book.identifiers.isbn);

@@ -37,6 +37,7 @@ export const login = (user, rememberMe) => dispatch => (
     SessionAPI.login(user).then(res => {
         const { token } = res.data;
         if (rememberMe) localStorage.setItem('jwtToken', token);
+        console.log('remember', rememberMe)
         SessionAPI.setAuthToken(token);
         const decoded = jwt_decode(token);
         dispatch(receiveCurrentUser(decoded))

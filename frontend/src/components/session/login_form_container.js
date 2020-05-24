@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login: user => dispatch(login(user))
+    login: (user, rememberMe) => dispatch(login(user, rememberMe))
   }
 }
 
@@ -28,6 +28,7 @@ class LoginContainer extends React.Component {
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleRememberMe = this.handleRememberMe.bind(this);
   }
 
   handleEmailChange(event) {

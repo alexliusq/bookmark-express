@@ -27,11 +27,8 @@ async function addBook(bookID) {
 //   });
 async function addGoodreadsBook(req, res) {
   try {
-    console.log('yello2');
-    const isbn = req.isbn ? req.isbn : req.params.id;
-    console.log(isbn);
-    const { book } = await grClient.showBook(isbn);
-    console.log(book);
+    const goodreadsID = req.goodreadsID ? req.goodreadsID : req.params.id;
+    const { book } = await grClient.showBook(goodreadsID);
     
     const createdBook = await Books.createBookWithGoodreads(book);
     res.json(createdBook);
@@ -44,8 +41,8 @@ router.post('/isbn/:isbn', async (req, res, next) => {
   try {
     console.log('yello');
     const goodreadsRes = await grClient.searchBooks({ q: req.params.isbn });
-    req.isbn = goodreadsRes.search.results.work.best_book.id._;
-    console.log(req.isbn);
+    req.goodreadsID = goodreadsRes.search.results.work.best_book.id._;
+    console.log(req.goodreadsID);
     next();
   } catch (errors) {
     res.json({ errors, explain: 'likely isbn not found on goodreads'});
