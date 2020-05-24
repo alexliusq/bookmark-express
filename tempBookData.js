@@ -46,13 +46,13 @@ function addBookWithISBN(isbn) {
 });
 }
 
-getBooksWithAnnotations().forEach(book => {
-  console.log('adding ', book.title)
-  const isbn = cleanISBN(book.identifiers.isbn);
-  if (isbn) {
-    addBookWithISBN(isbn);
-  }
-})
+// getBooksWithAnnotations().forEach(book => {
+//   console.log('adding ', book.title)
+//   const isbn = cleanISBN(book.identifiers.isbn);
+//   if (isbn) {
+//     addBookWithISBN(isbn);
+//   }
+// });
 
 // getBooksWithAnnotations().forEach(book => {
 //   book.identifiers.isbn = cleanISBN(book.identifiers.isbn);
@@ -111,10 +111,14 @@ async function addAllAnnotations() {
 }
 
 async function addAnnotation(ordernr) {
-  Annotations.addCalibreAnnotation(
-    tempAnnotations[ordernr]
-  );
+  const anno = tempAnnotations.filter(anno => {
+    return anno.ordernr === ordernr;
+  })
+  Annotations.addCalibreAnnotation(anno);
 }
+
+// addAnnotation(2997);
+
 
 // getData(bookIDs).then(data => saveData(data));
 
@@ -136,7 +140,7 @@ debugger;
 
 // Annotations.getAnnotationByID(9092)
 //   .then(anno => console.log(anno));
-
+console.log('bam')
 addAllAnnotations();
 // let annos = tempAnnotations.filter(anno => {
 //   return anno.title === 'Sapiens' && anno.end > 2030 && anno.end < 2040;

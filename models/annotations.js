@@ -1,9 +1,10 @@
 const db = require('./db');
 const fs = require('fs').promises;
-const Books = require('./books');
 
 const SQL = require('sql-template-strings');
 const path = require('path');
+const Books = require('./books');
+
 const tempDataFile = path.resolve(__dirname, './bookmarker.sql');
 
 const multipleUsersEnabled = require('../config/multiple_users').enabled;
@@ -15,7 +16,7 @@ const querySelectCols = `
   `;
 
 const annosSelectQuery = () => (
-  SQL(['SELECT ' + querySelectCols + ' FROM kindle_annotations'])
+  SQL([`SELECT ${querySelectCols} FROM kindle_annotations`])
 );
 
 // const annosUserFilter = (user_id) => {
@@ -27,10 +28,10 @@ async function getAllAnnotations(limit = 50, user_id) {
   // not multi user enabled for now.
   const query = annosSelectQuery();
 
-  if (multipleUsersEnabled) query.append(SQL ` WHERE user_id = ${user_id}`);
+  if (multipleUsersEnabled) query.append(SQL` WHERE user_id = ${user_id}`);
 
   query.append(SQL` LIMIT ${limit}`);
-  const {rows} = await db.query(query);
+  const { rows } = await db.query(query);
   return rows;
 }
 
@@ -43,11 +44,11 @@ async function getAnnotationsByBookTitle(title) {
 async function getAnnotationsByBookID(book_id, user_id) {
   console.log(book_id, user_id);
   const query = annosSelectQuery()
-    .append(SQL` WHERE book_id = ${book_id}`)
-  
+    .append(SQL` WHERE book_id = ${book_id}`);
+
   if (multipleUsersEnabled) query.append(SQL` AND user_id = ${user_id}`);
 
-  const {rows} = await db.query(query);
+  const { rows } = await db.query(query);
   return rows;
 }
 
@@ -57,12 +58,12 @@ async function getAnnotationByID(annoID, user_id) {
 
   if (multipleUsersEnabled) query.append(SQL` AND user_id = ${user_id}`);
 
-  const {rows} = await db.query(query);
+  const { rows } = await db.query(query);
 
   if (!rows[0]) return null;
   return rows[0];
 }
-  
+
 
 /*
 kind: 'highlight',
@@ -83,7 +84,7 @@ kind: 'highlight',
 */
 
 async function getMatchingAnnotationID(book_id, end) {
-  const {rows} = await db.query(SQL`
+  const { rows } = await db.query(SQL`
   SELECT id FROM kindle_annotations
   WHERE book_id = ${book_id} AND "end" = ${end} 
   `);
@@ -94,23 +95,24 @@ async function getMatchingAnnotationID(book_id, end) {
 async function addAnnotation(annotation, user_id) {
   const {
     ordernr, note, highlight, bookline, title, author, language, begin, end,
-    time, statusline, page
+    time, statusline, page,
   } = annotation;
 
+  console.log(annotation);
   let book_id = await Books.getBookID(title);
   if (!book_id) {
     console.log('Could not find pre-existing book to link annotations to');
     book_id = await Books.insertBookGetID(title);
   }
 
-  let matchID = await getMatchingAnnotationID(book_id, end);
+  const matchID = await getMatchingAnnotationID(book_id, end);
 
   const query = SQL``;
   console.log(matchID);
   if (matchID) {
     query.append(SQL`UPDATE kindle_annotations SET `);
 
-    if (highlight) query.append(SQL` highlight = ${highlight} `);
+    if (highlight || highlight === '') query.append(SQL` highlight = ${highlight} `);
     if (note) query.append(SQL` note = ${note} `);
 
     query.append(` WHERE id = ${matchID}`);
@@ -125,11 +127,10 @@ async function addAnnotation(annotation, user_id) {
       )
     ON CONFLICT (id)
     DO UPDATE SET
-    statusline = EXCLUDED.statusline, time = EXCLUDED.time`
-    );
+    statusline = EXCLUDED.statusline, time = EXCLUDED.time`);
   }
 
-  query.append(' RETURNING ' + querySelectCols);
+  query.append(` RETURNING ${querySelectCols}`);
 
   const { rows } = await db.query(query);
 
@@ -143,7 +144,8 @@ async function addAnnotation(annotation, user_id) {
 }
 
 async function addCalibreAnnotation(calibreAnnotation, user_id) {
-  const {text, kind} = calibreAnnotation;
+  const { text, kind } = calibreAnnotation;
+  if (kind !== 'highlight' && kind !== 'note') return;
   const highlight = kind === 'highlight' ? text : null;
   const note = kind === 'note' ? text : null;
 
@@ -151,8 +153,9 @@ async function addCalibreAnnotation(calibreAnnotation, user_id) {
     {
       ...calibreAnnotation,
       highlight,
-      note
-    }, user_id);
+      note,
+    }, user_id,
+  );
   return row;
 }
 
@@ -166,25 +169,23 @@ async function addCalibreAnnotation(calibreAnnotation, user_id) {
 // }
 
 async function editAnnotation(annotation) {
-  const {highlight, note, id} = annotation;
+  const { highlight, note, id } = annotation;
 
   const { rows } = await db.query(SQL`
     UPDATE kindle_annotations
     SET highlight = ${highlight}, note = ${note}, edited = TRUE
     WHERE id = ${id}
     RETURNING 
-  `.append(querySelectCols)
-  )
+  `.append(querySelectCols));
   return rows[0];
 }
 
 async function deleteAnnotation(annotation) {
-  const {id} = annotation;
+  const { id } = annotation;
 
   const { rows } = await db.query(SQL`
     DELETE FROM kindle_annotations WHERE id = ${id} RETURNING `
-    .append(querySelectCols)
-  );
+    .append(querySelectCols));
 
   return rows[0];
 }
@@ -210,4 +211,4 @@ module.exports = {
   editAnnotation,
   deleteAnnotation,
   addAnnotationCountForBook,
-}
+};

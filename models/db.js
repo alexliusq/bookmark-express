@@ -1,19 +1,19 @@
-const connectionString = require('../config/keys').connectionString;
-
 const { Pool } = require('pg');
+const { connectionString } = require('../config/keys');
+
 
 // const isProduction = (config.NODE_ENV === "production");
 
 const pool = new Pool({ connectionString });
 
 const logQuery = (text, params, start) => {
-  let timeStamp = new Date();
-  let formattedtimeStamp = timeStamp.toString().substring(4, 24);
+  const timeStamp = new Date();
+  const formattedtimeStamp = timeStamp.toString().substring(4, 24);
 
   console.log({
     formattedtimeStamp,
     text,
-    params
+    params,
   });
 };
 
@@ -21,19 +21,23 @@ const logQuery = (text, params, start) => {
 module.exports = {
   async query(sql_template_query) {
     const start = Date.now();
-    // logQuery(sql_template_query.text, 
+    // logQuery(sql_template_query.text,
     //   sql_template_query.values, start);
-    // try {
+    try {
+      const res = await pool.query(sql_template_query);
+      logQuery(sql_template_query.text,
+        sql_template_query.values);
+      const duration = Date.now() - start;
 
-    const res = await pool.query(sql_template_query);
-    console.log('uo');
-    logQuery(sql_template_query.text,
-      sql_template_query.values);
-    const duration = Date.now() - start;
-
-    console.log("Previous query took: ", duration, "ms");
-    return res;
-  }
+      console.log('Previous query took: ', duration, 'ms');
+      return res;
+    } catch (errors) {
+      console.log('Following query failed');
+      logQuery(sql_template_query.text,
+        sql_template_query.values);
+      throw (errors);
+    }
+  },
   // getClient: (callback) => {
   //   pool.connect((err, client, done) => {
   //     const query = client.query
@@ -58,4 +62,4 @@ module.exports = {
   //     callback(err, client, release)
   //   })
   // }
-}
+};

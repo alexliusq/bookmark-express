@@ -147,6 +147,7 @@ async function linkGoodreads(bookID, goodreadsID) {
     books
   SET
     goodreads_books_id = ${goodreadsID}
+  WHERE id = ${bookID}
   `);
 
   return res;
@@ -201,9 +202,10 @@ async function getBookDetails(book_id) {
 
 async function getAllBookDetails(limit = 50) {
 
-  const books = await  db.query(SQL`SELECT id, goodreads_books_id,
+  const books = await db.query(SQL`SELECT id, goodreads_books_id,
    calibre_books_id FROM books LIMIT ${limit}`);
 
+  console.log(books);
   const goodreadsBooks = books.rows.map((row) => row.goodreads_books_id);
   // console.log(goodreadsBooks);
 
