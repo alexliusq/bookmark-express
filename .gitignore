@@ -2,3 +2,7 @@
 .env
 /config/keys_dev.js
 .vscode/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
