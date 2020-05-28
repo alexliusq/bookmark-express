@@ -1,4 +1,9 @@
-CREATE TABLE IF NOT EXISTS "books" (
+CREATE SCHEMA app_public;
+CREATE SCHEMA app_private;
+
+ALTER DATABASE bookmarker SET search_path TO app_public, app_private, public;
+
+CREATE TABLE IF NOT EXISTS "app_public.books" (
   "id" SERIAL PRIMARY KEY,
   "title" text UNIQUE NOT NULL,
   "isbn" varchar(13) UNIQUE,
@@ -15,7 +20,7 @@ CREATE TABLE IF NOT EXISTS "books" (
 
 -- GOODREADS TABLES
 
-CREATE TABLE IF NOT EXISTS "goodreads_books" (
+CREATE TABLE IF NOT EXISTS "app_public.goodreads_books" (
   "id" SERIAL PRIMARY KEY,
   "title" text NOT NULL,
   "isbn13" varchar(13),
@@ -32,7 +37,7 @@ CREATE TABLE IF NOT EXISTS "goodreads_books" (
   "created_at" TIMESTAMP WITH TIMEZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS "goodreads_authors" (
+CREATE TABLE IF NOT EXISTS "app_public.goodreads_authors" (
   "id" SERIAL PRIMARY KEY,
   "name" text NOT NULL,
   "role" text,
@@ -41,7 +46,7 @@ CREATE TABLE IF NOT EXISTS "goodreads_authors" (
   "link" text
 );
 
-CREATE TABLE IF NOT EXISTS "goodreads_books_authors" (
+CREATE TABLE IF NOT EXISTS "app_public.goodreads_books_authors" (
   "book_id" int NOT NULL REFERENCES "goodreads_authors"("id") ON DELETE CASCADE,
   "author_id" int NOT NULL REFERENCES "goodreads_books"("id") ON DELETE CASCADE
 );
@@ -51,13 +56,13 @@ ALTER TABLE "books" ADD FOREIGN KEY ("goodreads_books_id") REFERENCES "goodreads
 
 -- CALIBRE TABLES
 
-CREATE TABLE IF NOT EXISTS "calibre_authors" (
+CREATE TABLE IF NOT EXISTS "app_public.calibre_authors" (
   "id" SERIAL PRIMARY KEY,
   "author" text UNIQUE,
   "author_sort" text
 );
 
-CREATE TABLE IF NOT EXISTS "calibre_authors_books" (
+CREATE TABLE IF NOT EXISTS "appcalibre_authors_books" (
   "author_id" int NOT NULL,
   "book_id" int NOT NULL
 );

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import BookCard from './book_card';
 import { fetchBook } from '../../actions/book_actions';
 
-const mapStateToProps= (state) => {
+const mapStateToProps = (state) => {
   return {
     book: state.books.book
   }
